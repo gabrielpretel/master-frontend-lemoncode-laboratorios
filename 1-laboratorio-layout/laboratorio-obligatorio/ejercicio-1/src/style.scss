@@ -1,0 +1,35 @@
+@use "base" as *;
+@use "normalize" as *;
+
+body {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #a9cad1;
+}
+
+@for $i from 1 through 3 {
+  .container-#{$i} {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    gap: 10px;
+  }
+}
+
+.box {
+  height: 80px;
+  width: 80px;
+  background-color: $base-color;
+  align-content: center;
+  text-align: center;
+  border-radius: 5px;
+  color: white;
+
+  &.base-color {
+    width: 100px;
+  }
+}

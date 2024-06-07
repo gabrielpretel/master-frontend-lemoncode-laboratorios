@@ -1,7 +1,5 @@
 # Ejercicio 1
 
----
-
 Este es un proyecto de Vite con soporte para Sass para la realización del laboratorio de layout.
 
 ## Requisitos
@@ -20,7 +18,7 @@ Este es un proyecto de Vite con soporte para Sass para la realización del labor
 2. Navega al directorio del proyecto:
 
    ```sh
-   cd 1-laboratorio-layout/ejercicio-1
+   cd 1-laboratorio-layout/laboratorio-obligatorio/ejercicio-1
    ```
 
 3. Instala las dependencias:
