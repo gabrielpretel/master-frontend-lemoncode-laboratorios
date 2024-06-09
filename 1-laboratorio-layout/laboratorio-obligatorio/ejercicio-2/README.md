@@ -1,6 +1,4 @@
-# Ejercicio 1
-
----
+# Ejercicio 2
 
 Este es un proyecto de Vite con soporte para Sass para la realización del laboratorio de layout.
 
@@ -20,7 +18,7 @@ Este es un proyecto de Vite con soporte para Sass para la realización del labor
 2. Navega al directorio del proyecto:
 
    ```sh
-   cd 1-laboratorio-layout/ejercicio-1
+   cd 1-laboratorio-layout/laboratorio-obligatorio/ejercicio-2
    ```
 
 3. Instala las dependencias:
@@ -38,6 +36,20 @@ npm run dev
 ```
 
 Abre [http://localhost:5173](http://localhost:5173) en tu navegador para ver la aplicación.
+
+### Para cambiar entre los dos temas
+
+Simplemente modificar el archivo `src/style.scss` la primera línea:
+
+```SCSS
+@use "_theme_a" as *;
+```
+
+por:
+
+```SCSS
+@use "_theme_b" as *;
+```
 
 ## Licencia
 
