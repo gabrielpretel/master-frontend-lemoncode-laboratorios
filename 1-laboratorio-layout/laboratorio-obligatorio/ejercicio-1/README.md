@@ -37,6 +37,10 @@ npm run dev
 
 Abre [http://localhost:5173](http://localhost:5173) en tu navegador para ver la aplicación.
 
+## Nota
+
+No he conseguido que el color de la letra, al calcularse de forma automática, se vea bien con todos los fondos, por lo que la accesibilidad no es la mejor.
+
 ## Licencia
 
 Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo LICENSE para más detalles.
