@@ -148,6 +148,7 @@ main {
       & img:hover {
         transform: var(--scale);
         filter: var(--drop-shadow);
+        border-image: fill 0 linear-gradient(#0003, #000);
       }
     }
 
