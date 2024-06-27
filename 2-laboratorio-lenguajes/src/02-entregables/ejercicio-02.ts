@@ -1,9 +1,6 @@
 console.log("************** DELIVERABLE 02 *********************");
 
-const concat = (a: any[], b: any[]): any[] => {
-  const concatArray = [...a, ...b];
-  return concatArray;
-};
+const concat = (a: any[], b: any[]): any[] => [...a, ...b];
 
 console.log(concat([1, 2], [3, 4]));
 console.log(concat([1, 2], ["a", "b"]));
@@ -14,8 +11,7 @@ console.log(concat(["a", "b", 0], ["c", 1, { name: "Gabriel" }]));
 
 console.log("************** OPTIONAL *********************");
 
-const dynamicConcat = (...args: any[]): any[] => {
-  return args.reduce((acc, array) => [...acc, ...array], []);
-};
+const dynamicConcat = (...args: any[]): any[] =>
+  args.reduce((acc, array) => [...acc, ...array], []);
 
 console.log(dynamicConcat([1, 2], [3, 4], ["hello", "goodbye"], []));
