@@ -19,7 +19,7 @@ body {
   justify-content: flex-start;
   flex-direction: column;
 
-  & p{
+  & p {
     font-weight: 600;
   }
 }
@@ -53,7 +53,7 @@ body {
 @media (width < 501px) {
   .container {
     height: auto;
-    
+
     & p {
       padding: 10px;
     }
