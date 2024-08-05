@@ -1,0 +1,12 @@
+.hello-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100dvh;
+  background: radial-gradient(ellipse, transparent 40%, #000000 78%),
+    url("@/images/house-of-the-dragon.jpg");
+
+  & h1 {
+    color: white;
+  }
+}
