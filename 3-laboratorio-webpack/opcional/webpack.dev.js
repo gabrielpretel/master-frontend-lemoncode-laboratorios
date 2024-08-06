@@ -5,11 +5,6 @@ import Dotenv from "dotenv-webpack";
 
 export default merge(common, {
   mode: "development",
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src"),
-    },
-  },
   module: {
     rules: [
       {

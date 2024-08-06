@@ -8,6 +8,9 @@ export default {
   context: path.resolve(__dirname, "./src"),
   resolve: {
     extensions: [".js", ".ts", ".tsx"],
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
   },
   entry: {
     app: "./app.tsx",
