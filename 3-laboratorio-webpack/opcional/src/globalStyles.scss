@@ -1,0 +1,14 @@
+@font-face {
+  font-family: "enchanted";
+  src: url("@/fonts/enchanted_land-webfont.woff") format("woff"),
+    url("@/fonts/enchanted_land-webfont.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  min-height: 100dvh;
+  background-color: #333333;
+  padding: 0;
+  margin: 0;
+}

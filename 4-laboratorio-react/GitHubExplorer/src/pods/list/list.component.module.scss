@@ -1,0 +1,19 @@
+.list-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 940px;
+  border-radius: 20px;
+  padding: 20px;
+  align-content: flex-start;
+}
+
+.list-container-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin: 8px 0px;
+}
+
+.list-container-header {
+  margin-bottom: 20px;
+}

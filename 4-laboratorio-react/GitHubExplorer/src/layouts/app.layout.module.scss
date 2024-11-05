@@ -1,0 +1,30 @@
+.layout-app-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background: radial-gradient(
+      at 60% -30%,
+      #4effca40 15%,
+      #4effca10 60%,
+      transparent
+    ),
+    #080b0f;
+}
+
+.layout-app-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+  flex: 1;
+  max-width: 940px;
+  margin-top: 20px;
+}
+
+.layout-app-content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  flex: 1;
+}

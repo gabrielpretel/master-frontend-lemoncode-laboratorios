@@ -1,0 +1,21 @@
+.detail-info-squares {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.detail-info-square {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 5px;
+  padding: 16px 10px;
+  border-radius: 20px;
+
+  @include hover-gradient-effect;
+
+  & > div {
+    display: grid;
+    align-self: center;
+  }
+}

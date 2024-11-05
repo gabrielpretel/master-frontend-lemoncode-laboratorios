@@ -1,0 +1,70 @@
+$text-color: #ad937c;
+$bg-color: #0b0404;
+$main-font: "Game of Thrones";
+
+@font-face {
+  font-family: "Game of Thrones";
+  src: url("./fonts/Game-of-Thrones.woff2") format("woff2"),
+    url("./fonts/Game-of-Thrones.woff") format("woff");
+}
+
+:root {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+}
+
+.text-style {
+  color: $text-color;
+  font-family: $main-font;
+  text-shadow: 5px 5px 20px #000000;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%;
+    height: 300%;
+    background-color: #000000;
+    z-index: -1;
+    border-radius: 95px;
+    filter: blur(40px);
+  }
+}
+
+.appContainer {
+  display: flex;
+  position: relative;
+  flex-direction: column-reverse;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  background: radial-gradient(ellipse, transparent 40%, #000000 78%),
+    url("./images/house-of-the-dragon.jpg");
+  background-blend-mode: darken;
+  background-size: cover;
+  background-position: center;
+
+  & h1 {
+    font-size: 2rem;
+    text-align: center;
+    opacity: 0.9;
+  }
+  & img {
+    max-width: 250px;
+    height: auto;
+    filter: hue-rotate(28deg) brightness(411%) saturate(15%)
+      drop-shadow(0px 0px 25px #000000);
+    position: relative;
+  }
+}

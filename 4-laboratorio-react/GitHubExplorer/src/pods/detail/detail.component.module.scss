@@ -1,0 +1,32 @@
+.detail-container {
+  display: grid;
+  position: relative;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 3fr;
+  width: 940px;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.4);
+  background: radial-gradient(
+      at 70% -30%,
+      #4effca40 15%,
+      #4effca10 60%,
+      transparent
+    ),
+    #181818;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("@/pods/detail/images/dark-background.jpg");
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+    z-index: 0;
+    border-radius: 20px;
+  }
+}

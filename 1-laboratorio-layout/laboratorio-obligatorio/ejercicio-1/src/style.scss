@@ -1,0 +1,93 @@
+@use "base" as *;
+@use "normalize" as *;
+
+:root {
+  --base-color: 0, 100%; /* Color base en formato HSL (Rojo brillante) */
+  --text-color-dark: hsl(var(--base-color), 20%); /* Color de texto oscuro */
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #353d6c;
+}
+
+@for $i from 1 through 3 {
+  .container-#{$i} {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    gap: 10px;
+  }
+}
+
+.box {
+  height: 80px;
+  width: 80px;
+  background-color: $base-color-1;
+  align-content: center;
+  text-align: center;
+  border-radius: 5px;
+  color: white;
+
+  &.base-color {
+    width: 100px;
+  }
+}
+
+$i: 4;
+@while ($i > 0) {
+  .container-1 > .base-color {
+    background-color: $base-color-1;
+    color: grey;
+  }
+
+  .container-2 > .base-color {
+    background-color: $base-color-2;
+  }
+
+  .container-3 > .base-color {
+    background-color: $base-color-3;
+  }
+
+  .container-1 > .darken-#{$i} {
+    background-color: darken($color: $base-color-1, $amount: 6% * $i);
+    color: lighten($color: $text-color-dark, $amount: 19% * $i);
+  }
+
+  .container-2 > .darken-#{$i} {
+    background-color: darken($color: $base-color-2, $amount: 6% * $i);
+    color: lighten($color: $text-color-dark, $amount: 19% * $i);
+  }
+
+  .container-3 > .darken-#{$i} {
+    background-color: darken($color: $base-color-3, $amount: 6% * $i);
+    color: lighten($color: $text-color-dark, $amount: 19% * $i);
+  }
+
+  $i: $i - 1;
+}
+
+$i: 1;
+@while $i <= 4 {
+  .container-1 > .lighten-#{$i} {
+    background-color: lighten($color: $base-color-1, $amount: 6% * $i);
+    color: darken($color: $text-color-light, $amount: 19% * $i);
+  }
+
+  .container-2 > .lighten-#{$i} {
+    background-color: lighten($color: $base-color-2, $amount: 6% * $i);
+    color: darken($color: $text-color-light, $amount: 19% * $i);
+  }
+
+  .container-3 > .lighten-#{$i} {
+    background-color: lighten($color: $base-color-3, $amount: 6% * $i);
+    color: darken($color: $text-color-light, $amount: 19% * $i);
+  }
+
+  $i: $i + 1;
+}

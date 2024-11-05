@@ -1,0 +1,16 @@
+.hello-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100dvh;
+  background: radial-gradient(ellipse, #000000, transparent 35%),
+    radial-gradient(ellipse, transparent 35%, #000000 70%),
+    url("@/images/house-of-the-dragon.jpg");
+
+  & h1 {
+    color: white;
+    font-family: "enchanted", Arial, Helvetica, sans-serif;
+    font-size: 3rem;
+    opacity: 0.95;
+  }
+}

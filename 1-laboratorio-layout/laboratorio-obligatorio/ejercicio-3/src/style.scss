@@ -1,0 +1,70 @@
+@use "_base" as *;
+@use "normalize" as *;
+
+body {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: $bg-color;
+  width: 100%;
+  font-family: $secondary-font;
+}
+
+.container {
+  max-width: 650px;
+  height: 50px;
+  display: flex;
+  flex: 1;
+  justify-content: flex-start;
+  flex-direction: column;
+
+  & p {
+    font-weight: 600;
+  }
+}
+
+.navbar {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: space-between;
+
+  & .navbar-item {
+    background-color: $primary-color;
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    align-content: center;
+    transition: background-color ease-in 0.3s;
+    min-width: 0;
+
+    &:hover {
+      background-color: $secondary-color;
+    }
+  }
+
+  & a {
+    color: $text-color;
+    text-decoration: none;
+  }
+}
+
+@media (width < 501px) {
+  .container {
+    height: auto;
+
+    & p {
+      padding: 10px;
+    }
+  }
+
+  .navbar {
+    width: 100%;
+    flex-direction: column;
+
+    & .navbar-item {
+      padding: 15px;
+    }
+  }
+}

@@ -1,0 +1,51 @@
+@mixin hover-gradient-effect(
+  $base-color: #232323,
+  $hover-color: #232323,
+  $primary-color: #4effca,
+  $transition-duration: 0.3s
+) {
+  position: relative;
+  background-color: $base-color;
+  transition: background-color $transition-duration ease;
+  opacity: 0.9;
+  overflow: hidden;
+  background: radial-gradient(
+    at 20% -50%,
+    #{$primary-color}10 0%,
+    #{$primary-color}10 60%,
+    transparent
+  );
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+      at 20% -50%,
+      #{$primary-color}45 0%,
+      #{$primary-color}15 60%,
+      transparent
+    );
+    opacity: 0.3;
+    filter: blur(50px);
+    transition: opacity $transition-duration ease;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  & > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  &:hover {
+    background-color: $hover-color;
+
+    &::before {
+      opacity: 1;
+    }
+  }
+}
