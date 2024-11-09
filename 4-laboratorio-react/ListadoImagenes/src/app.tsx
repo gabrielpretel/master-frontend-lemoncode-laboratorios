@@ -1,9 +1,10 @@
 import React from "react";
+import { AppRouter } from "./routers";
 
 export const App: React.FC = () => {
   return (
     <>
-      <h1>ViteSeed with React</h1>
+      <AppRouter />
     </>
   );
 };

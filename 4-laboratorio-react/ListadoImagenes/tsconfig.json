@@ -12,6 +12,7 @@
     "allowJs": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
     "isolatedModules": true,
     "resolveJsonModule": true,
     "useDefineForClassFields": true,
@@ -19,7 +20,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["vite/client"]
+    "types": ["vite/client", "vite-plugin-svgr/client"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]
