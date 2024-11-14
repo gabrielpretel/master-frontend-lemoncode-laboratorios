@@ -1,4 +1,4 @@
-export interface championEntity {
+export interface ChampionEntity {
   id: number;
   name: string;
   location: string;
@@ -7,7 +7,16 @@ export interface championEntity {
   selected: boolean;
 }
 
-export const CHAMPIONDATA: championEntity[] = [
+export type EntityType = "champion" | "region";
+
+export interface CartEntity {
+  id: number;
+  entityType: EntityType;
+  name: string;
+  img: string;
+}
+
+export const CHAMPIONDATA: ChampionEntity[] = [
   {
     id: 1,
     name: "Ahri",

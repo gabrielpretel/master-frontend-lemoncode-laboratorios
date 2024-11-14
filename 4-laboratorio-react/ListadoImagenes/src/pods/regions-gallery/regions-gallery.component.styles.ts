@@ -1,66 +1,78 @@
 import { css } from "@emotion/react";
 
-const HomeGalleryStyle = css`
-  color: #c4b998;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-`;
-
-const titleSection = css`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  margin-bottom: 40px;
-`;
-
-const lineStyle = css`
-  display: flex;
-  padding-left: 70px;
-  align-items: center;
-  justify-content: center;
-  width: 30%;
-`;
-
-const lineLeftStyle = css`
-  transform: rotate(180deg);
-`;
-
 const galleryContainer = css`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 `;
 
-const galleryCardContainer = (img: string, position: string) => css`
+const galleryCardContainer = (img: string, selected: boolean) => css`
   position: relative;
-  background-image: url(${img});
-  background-position: ${position};
-  background-size: 350%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url(${img});
+  background-position: bottom center;
+  background-size: cover;
   background-repeat: no-repeat;
   opacity: 1;
   height: 450px;
-  transition: 0.4s;
+  transition: all 0.4s;
   margin-bottom: 10px;
   will-change: transform;
 
+  &::before {
+    content: "";
+    position: absolute;
+    background: ${selected
+      ? ""
+      : "radial-gradient(#111111 10%, transparent 290%)"};
+    opacity: 0.7;
+    height: 100%;
+    width: 100%;
+    transition: all 1s;
+  }
+
+  & img {
+    filter: drop-shadow(2px 4px 6px black);
+  }
+
   &:hover {
     transition-timing-function: ease, step-start, ease;
-    transition-duration: 0.5s;
-    scale: 1.1;
     border: 1px solid #927345;
-    z-index: 3;
+
+    &::before {
+      opacity: 0;
+    }
+
+    & img {
+      opacity: ${selected ? 1 : 0};
+    }
   }
 
   &:hover .action {
     height: 54px;
     border-top: 1px solid #927345;
     background-color: rgba(10, 10, 12, 0.94);
+    font-size: 12px;
+    font-weight: 800;
+    transition: 0.4s;
+
+    &:hover {
+      background-color: rgba(10, 10, 12, 0.6);
+      background-position: 29% 87%;
+    }
   }
 
   &:hover .info {
     bottom: 54px;
+  }
+
+  img {
+    opacity: 1;
+    z-index: 1;
+    transition: 0.4s;
+    height: 75px;
   }
 `;
 
@@ -101,7 +113,7 @@ const galleryCardAction = css`
   font-family: "Beaufort for LOL", Arial, sans-serif;
   font-weight: 700;
   font-size: 11px;
-  background-color: rgba(10, 10, 12, 0.9);
+  background-color: rgba(10, 10, 12, 01);
   color: #937341;
   height: 0px;
   letter-spacing: 0.3em;
@@ -137,11 +149,13 @@ const cardSelected = css`
   }
 `;
 
+const flexCentered = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
 export default {
-  HomeGalleryStyle,
-  titleSection,
-  lineStyle,
-  lineLeftStyle,
   galleryContainer,
   galleryCardContainer,
   galleryCardInfo,
@@ -149,4 +163,5 @@ export default {
   actionSelected,
   infoSelected,
   cardSelected,
+  flexCentered,
 };

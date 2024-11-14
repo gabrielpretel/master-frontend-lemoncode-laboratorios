@@ -1,83 +1,54 @@
 import React, { useContext } from "react";
-import { css } from "@emotion/react";
 import DeleteIcon from "@/common/icons/delete-icon.svg?react";
-import { championEntity } from "@/common/mock-data";
-import {
-  ChampionsContext,
-  ChampionsContextModel,
-} from "@/core/providers/cart.provider";
+import { CartEntity, ChampionEntity, RegionEntity } from "@/common/mock-data";
+import { CartContext } from "@/core/providers/cart.provider";
+import styles from "./cart-item.component.styles";
+import { toggleChampionSelection } from "@/core/helpers";
+import { ChampionsContext } from "@/core/providers/champions.provider";
+import { RegionsContext } from "@/core/providers";
 
 interface Props {
-  char: championEntity;
+  currentItem: CartEntity;
 }
 
-const deleteIcon = css`
-  height: 24px;
-  transition: 0.4s;
-
-  &:hover {
-    scale: 1.2;
-    filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.9));
-  }
-`;
-
-const cartItemInfo = css`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-`;
-
-const cartItem = (img: string) => css`
-  border-bottom: 1px solid #31271e;
-  padding: 20px;
-  color: #c4b998;
-  font-size: 20px;
-  transition: 0.3s;
-
-  background: radial-gradient(
-      at 70% 300%,
-      #c4b99840 15%,
-      #c4b99810 60%,
-      transparent
-    ),
-    url(${img});
-
-  & img {
-    box-shadow: 0 0 16px 16px rgba(0, 0, 0, 0.2);
-  }
-`;
-
-export const CartItem: React.FC<Props> = ({ char }) => {
-  const { cartItems, setCartItems, setChampions, champions } =
-    useContext<ChampionsContextModel>(ChampionsContext);
+export const CartItem: React.FC<Props> = ({ currentItem }) => {
+  const { cartItems, setCartItems } = useContext(CartContext);
+  const { champions, setChampions } = useContext(ChampionsContext);
+  const { regions, setRegions } = useContext(RegionsContext);
 
   const handlerClick = () => {
-    const newCartItems = cartItems.filter(
-      (character) => character.id !== char.id
-    );
-    setCartItems(newCartItems);
+    if (currentItem.entityType === "champion") {
+      const newChampions = champions.map((champion: ChampionEntity) =>
+        champion.id === currentItem.id
+          ? { ...champion, selected: false }
+          : champion
+      );
+      setChampions(newChampions);
+    }
+    if (currentItem.entityType === "region") {
+      const newRegions = regions.map((region: RegionEntity) =>
+        region.id === currentItem.id ? { ...region, selected: false } : region
+      );
+      setRegions(newRegions);
+    }
 
-    const newChampions = champions.map((character) =>
-      character.id === char.id ? { ...character, selected: false } : character
-    );
-
-    setChampions(newChampions);
+    setCartItems(cartItems.filter((item) => item.id !== currentItem.id));
   };
 
   return (
-    <li css={cartItem(char.img)}>
+    <li css={styles.cartItem(currentItem.img)}>
       <img
         css={{
           backgroundPosition: "50% 50%",
           border: "1px solid #31271e",
         }}
-        src={char.img}
+        src={currentItem.img}
         alt="Ashe"
       />
-      <div css={cartItemInfo}>
-        <p>{char.name}</p>
+      <div css={styles.cartItemInfo}>
+        <p>{currentItem.name}</p>
         <button onClick={handlerClick}>
-          <DeleteIcon css={deleteIcon} />
+          <DeleteIcon css={styles.deleteIcon} />
         </button>
       </div>
     </li>

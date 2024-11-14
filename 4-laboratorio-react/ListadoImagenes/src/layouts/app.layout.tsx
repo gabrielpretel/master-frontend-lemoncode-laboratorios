@@ -27,11 +27,18 @@ const AppLayoutContainerStyle = css`
   background-color: #0a0a0c;
 `;
 
+const appMaxLayout = css`
+  width: 1200px;
+  padding: 20px;
+`;
+
 export const AppLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <div css={AppLayoutContainerStyle}>
       <HeaderComponent />
-      <div css={AppLayoutContentStyle}>{children}</div>
+      <div css={AppLayoutContentStyle}>
+        <div css={appMaxLayout}>{children}</div>
+      </div>
       <FooterComponent />
       <CartSidebarComponent />
     </div>

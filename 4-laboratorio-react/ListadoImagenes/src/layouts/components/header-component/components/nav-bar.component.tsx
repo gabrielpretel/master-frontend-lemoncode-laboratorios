@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "@emotion/react";
 import { routes } from "@/routers/routes";
 
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const navStyle = css`
   display: flex;
@@ -27,20 +27,26 @@ const navStyle = css`
   }
 `;
 
+const activeLink = css`
+  filter: drop-shadow(0px 5px 15px #ffffff90) !important;
+`;
+
 const menuLinks = [
-  { to: routes.home, text: "Home" },
   { to: routes.champions, text: "Champions" },
   { to: routes.regions, text: "Regions" },
 ];
 
 export const NavBarComponent: React.FC = () => {
+  const { pathname: currentPath } = useLocation();
   return (
     <nav css={navStyle}>
       <ul>
         {menuLinks.map(({ to, text }) => {
           return (
             <li key={to}>
-              <Link to={to}>{text}</Link>
+              <Link to={to} css={to === currentPath ? activeLink : null}>
+                {text}
+              </Link>
             </li>
           );
         })}

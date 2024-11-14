@@ -1,19 +1,23 @@
-import { CartProvider } from "@/core/providers/cart.provider";
+import { AppProviders } from "@/core/providers";
 import { AppLayout } from "@/layouts";
-import { HomeScene } from "@/scenes";
+import { ChampionsScene, CheckoutScene, RegionsScene } from "@/scenes";
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { routes } from "./routes";
 
 export const AppRouter: React.FC = () => {
   return (
     <BrowserRouter>
-      <CartProvider>
+      <AppProviders>
         <AppLayout>
           <Routes>
-            <Route path="/" element={<HomeScene />}></Route>
+            <Route path={routes.champions} element={<ChampionsScene />}></Route>
+            <Route path={routes.regions} element={<RegionsScene />}></Route>
+            <Route path={routes.checkout} element={<CheckoutScene />}></Route>
+            <Route path="*" element={<Navigate to={"/champions"} />}></Route>
           </Routes>
         </AppLayout>
-      </CartProvider>
+      </AppProviders>
     </BrowserRouter>
   );
 };

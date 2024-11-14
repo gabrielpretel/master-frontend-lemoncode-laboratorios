@@ -1,11 +1,11 @@
 export interface SwitchRoutes {
-  home: string;
   champions: string;
   regions: string;
+  checkout: string;
 }
 
 export const routes: SwitchRoutes = {
-  home: "/",
   champions: "/champions",
   regions: "/regions",
+  checkout: "/checkout",
 };

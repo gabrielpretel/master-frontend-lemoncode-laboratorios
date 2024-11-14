@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { css } from "@emotion/react";
 import CartIcon from "@/common/icons/cart-icon.svg?react";
-import { ChampionsContext } from "@/core/providers/cart.provider";
+import { CartContext } from "@/core/providers/cart.provider";
 
 const cartMenuStyle = css`
   display: flex;
@@ -11,7 +11,7 @@ const cartMenuStyle = css`
 `;
 
 export const CartMenuComponent: React.FC = () => {
-  const { setIsShowCart } = useContext(ChampionsContext);
+  const { setIsShowCart } = useContext(CartContext);
 
   return (
     <div css={cartMenuStyle}>
