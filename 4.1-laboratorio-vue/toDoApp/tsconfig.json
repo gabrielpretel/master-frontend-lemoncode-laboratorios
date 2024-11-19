@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["@nuxt/types"]
+  },
+  "exclude": ["node_modules", ".nuxt", "dist"],
+  "include": ["types/**/*.d.ts", "nuxt.config.ts", "**/*.ts", "**/*.vue"]
+}
