@@ -1,142 +1,131 @@
 <script setup lang="ts">
   import { ref } from 'vue'
-  import { TaskRecord, useTasksHistory } from '../../composables/useTasksHistory'
-  import AddIcon from '../assets/icons/addIcon.svg'
-  import PlusIcon from '../assets/icons/plusIcon.svg'
+  import {
+    TaskRecord,
+    useTasksHistory,
+  } from '../../composables/useTasksHistory'
+
   import DeleteIcon from '../assets/icons/deleteIcon.svg'
   import CompleteIcon from '../assets/icons/completeIcon.svg'
   import IncompleteIcon from '../assets/icons/incompleteIcon.svg'
   import EditIcon from '../assets/icons/editIcon.svg'
-  import SuccessIcon from '../assets/icons/addedIcon.svg'
-  import CrossIcon from '../assets/icons/crossIcon.svg'
-  import DraggaleIcon from '../assets/icons/draggableIcon.svg'
+  import DraggableIcon from '../assets/icons/draggableIcon.svg'
   import draggable from 'vuedraggable'
-
-  const name = ref('')
-  const description = ref('')
-  const showNewTaskForm = ref(false)
-  const showAlert = ref(false)
-
-  const generateId = () => {
-    return Math.random().toString(36).substring(2, 15)
-  }
+  import TheNewTaskForm from './TheNewTaskForm.vue'
 
   const taskHistory = useTasksHistory()
 
+  let filteredTasks = ref<TaskRecord[]>(taskHistory.toDoList)
+  let selectedFilter = ref<FilterTask>('all')
+  let isEmptyCompletedTask = ref<boolean>()
+  let isEmptyIncompletedTask = ref<boolean>()
+
   const onComplete = (currentTask: TaskRecord) => {
     taskHistory.toDoList = taskHistory.toDoList.map((task) => {
-      if (currentTask.id === task.id) {
-        return { ...currentTask, completed: !currentTask.completed }
+      if (task.id === currentTask.id) {
+        return { ...task, completed: !task.completed }
       }
-
       return task
     })
+
+    filterTasks(selectedFilter.value)
   }
 
   const onDelete = (id: string) => {
     taskHistory.toDoList = taskHistory.toDoList.filter((task) => task.id !== id)
+    filterTasks(selectedFilter.value)
   }
 
-  const onSubmit = () => {
-    const newTask = {
-      id: generateId(),
-      name: name.value,
-      description: description.value,
-      completed: false,
-      bgColor: getRandomColor(),
-    }
+  type FilterTask = 'all' | 'completed' | 'incompleted'
 
-    taskHistory.addTask(newTask)
+  const filterTasks = (filter: FilterTask): TaskRecord[] => {
+    selectedFilter.value = filter
+    filteredTasks.value =
+      filter === 'all'
+        ? taskHistory.toDoList
+        : taskHistory.toDoList.filter((task) =>
+            filter === 'completed' ? task.completed : !task.completed,
+          )
 
-    name.value = ''
-    description.value = ''
+    isEmptyCompletedTask.value =
+      filter === 'completed' && filteredTasks.value.length === 0
 
-    showNewTaskForm.value = !showNewTaskForm.value
-    showAlert.value = true
+    isEmptyIncompletedTask.value =
+      filter === 'incompleted' && filteredTasks.value.length === 0
 
-    setTimeout(() => {
-      showAlert.value = false
-    }, 5000)
+    return filteredTasks.value
   }
 
-  const onClick = () => {
-    showNewTaskForm.value = !showNewTaskForm.value
+  const syncOrder = (newOrder: TaskRecord[]) => {
+    taskHistory.toDoList = [...newOrder]
   }
-
-  const closeAlert = () => {
-    showAlert.value = false
-  }
-
-  const colors = [
-    '#FEC5BB',
-    '#FCD5CE',
-    '#FAE1DD',
-    '#F8EDEB',
-    '#E8E8E4',
-    '#D8E2DC',
-    '#ECE4DB',
-    '#FFE5D9',
-    '#FFD7BA',
-    '#FEC89A',
-  ]
-
-  const getRandomColor = (): string =>
-    colors[Math.floor(Math.random() * colors.length)]
 </script>
 
 <template>
   <h2>List name</h2>
   <section class="todo-list-container">
-    <button aria-label="New task" class="new-task" @click="onClick()">
-      <AddIcon class="new-task-icon" /> New task
-    </button>
-    <form
-      @submit.prevent="onSubmit"
-      v-if="showNewTaskForm"
-      class="new-task-form"
-    >
-      <input type="text" v-model="name" placeholder="Task name" required />
-      <textarea v-model="description" placeholder="Write a note..."></textarea>
-      <button aria-label="Add Task" class="add-task-button">
-        <PlusIcon /><span>Add task</span>
-      </button>
-    </form>
-    <div class="alert-container" v-if="showAlert">
-      <div class="alert-info">
-        <SuccessIcon class="success-icon" />
-        <p>Task added successfully.</p>
-      </div>
-      <button aria-label="Close alert" @click="closeAlert">
-        <CrossIcon class="cross-icon" />
+    <div class="filters-container">
+      <button
+        class="button-primary"
+        @click="filterTasks('all')"
+        :class="{ active: selectedFilter === 'all' }"
+      >
+        All</button
+      ><button
+        class="button-primary"
+        @click="filterTasks('completed')"
+        :class="{ active: selectedFilter === 'completed' }"
+      >
+        Completed</button
+      ><button
+        class="button-primary"
+        @click="filterTasks('incompleted')"
+        :class="{ active: selectedFilter === 'incompleted' }"
+      >
+        Incompleted
       </button>
     </div>
+    <TheNewTaskForm />
     <div
       class="empty-list empty-list--centered"
-      v-if="taskHistory.toDoList.length === 0"
+      v-if="
+        taskHistory.toDoList.length === 0 ||
+        isEmptyCompletedTask ||
+        isEmptyIncompletedTask
+      "
     >
-      <p>
-        <b>No tasks available at the moment.</b>
-        Use the button below to create a new note and start organizing your
-        tasks effectively.
+      <p v-if="taskHistory.toDoList.length === 0">
+        No tasks available at the moment. Use the button below to create a new
+        note and start organizing your tasks effectively.
       </p>
+      <p v-else-if="isEmptyCompletedTask">No completed tasks yet.</p>
+      <p v-else>No incomplete tasks yet.</p>
     </div>
 
     <div class="task-list">
       <draggable
-        v-model="taskHistory.toDoList"
+        v-model="filteredTasks"
         group="tasks"
         handle=".drag-handle"
         animation="200"
         ghost-class="dragging"
         item-key="id"
+        @update:modelValue="syncOrder"
       >
         <template #item="{ element }">
-          <li class="item" :style="{ backgroundColor: element.bgColor }">
-            <!-- <span class="drag-handle">⠿</span> -->
-            <DraggaleIcon class="drag-handle" />
+          <li
+            class="item"
+            :key="element.id"
+            :style="{
+              backgroundColor: !element.completed ? element.bgColor : '#fafafa',
+            }"
+            :class="{ completed: element.completed }"
+          >
+            <DraggableIcon class="drag-handle" />
             <div class="task-content">
               <div class="task-header">
                 <span>{{ element.name }}</span>
+
                 <div class="task-buttons">
                   <button
                     @click="onComplete(element)"
@@ -158,7 +147,9 @@
                   </button>
                 </div>
               </div>
-              <p v-if="element.description !== ''">{{ element.description }}</p>
+              <p v-if="element.description !== ''">
+                {{ element.description }}
+              </p>
             </div>
           </li>
         </template>
@@ -171,6 +162,10 @@
   h2 {
     margin-top: 10px;
     margin-bottom: 20px;
+  }
+
+  .todo-list-container {
+    position: relative;
   }
 
   .task-list {
@@ -207,79 +202,6 @@
     }
   }
 
-  .new-task {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0;
-    transition: 0.4s;
-
-    &:hover {
-      font-weight: 600;
-    }
-
-    &:hover .new-task-icon {
-      fill: #383b42;
-      border-color: #383b42;
-      color: white;
-    }
-  }
-
-  .new-task-icon {
-    fill: transparent;
-    margin-right: 5px;
-    transition: 0.4s;
-  }
-
-  .new-task-form {
-    display: flex;
-    flex-direction: column;
-    max-width: 600px;
-    gap: 10px;
-
-    & input,
-    textarea {
-      border-radius: 8px;
-      font-family: 'Anderson Grotesk', Arial, Helvetica, sans-serif;
-      border: none;
-      padding: 8px 20px;
-      background-color: #f6f8f9;
-
-      &:focus {
-        outline: 1px solid rgb(212, 212, 212);
-      }
-    }
-
-    & input {
-      max-width: 300px;
-    }
-
-    & textarea {
-      max-width: 600px;
-      min-height: 100px;
-    }
-
-    & .add-task-button {
-      display: flex;
-      width: 110px;
-      border-radius: 8px;
-      padding: 8px;
-      background-color: #f2f4f6;
-      transition: 0.4s;
-      font-size: 14px;
-
-      & svg {
-        height: 16px;
-      }
-
-      &:hover {
-        background-color: #383b42;
-        border-color: #383b42;
-        color: white;
-      }
-    }
-  }
-
   .task-header {
     display: flex;
     justify-content: space-between;
@@ -304,49 +226,9 @@
     }
   }
 
-  .alert-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 8px;
-    padding: 8px;
-    background-color: #d5ffe67a;
-    margin-top: 10px;
-
-    & .alert-info {
-      display: flex;
-      align-items: center;
-    }
-
-    & p {
-      font-weight: 400;
-      margin-left: 5px;
-      color: #66e097;
-    }
-  }
-
-  .success-icon {
-    fill: white;
-    color: #66e097;
-  }
-
-  ::v-deep(.success-icon svg circle) {
-    stroke: white;
-  }
-
-  .cross-icon {
-    height: 1.2rem;
-    transition: 0.4s;
-    color: #66e097;
-
-    &:hover {
-      scale: 1.2;
-    }
-  }
-
   .empty-list {
-    color: #919191;
-    font-size: 1.1rem;
+    color: #383b42;
+    font-size: 0.9rem;
     margin: 20px 0;
     background-color: #f6f8f9;
     border-radius: 8px;
@@ -379,5 +261,41 @@
     opacity: 0.6;
     scale: 1.05;
     background-color: #f0f0f0;
+  }
+
+  .completed {
+    text-decoration: line-through;
+    background-color: #919191;
+    opacity: 0.5;
+  }
+
+  .completed-message {
+    text-decoration: none;
+  }
+
+  .filters-container {
+    display: flex;
+    justify-content: flex-end;
+    position: absolute;
+    right: 0;
+    gap: 8px;
+    min-height: 32px;
+
+    & .active {
+      background-color: #383b42;
+      color: white;
+    }
+  }
+
+  .button-primary {
+    padding: 5px 10px;
+    border-radius: 8px;
+    background-color: #e8e8e4;
+    transition: 0.4s;
+
+    &:hover {
+      background-color: #383b42;
+      color: white;
+    }
   }
 </style>
