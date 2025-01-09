@@ -14,6 +14,7 @@ const cartContainer = css`
   margin: 5px;
   margin-bottom: 0px;
   overflow-y: auto;
+  z-index: 3;
 
   &::-webkit-scrollbar-thumb {
     background: rgba(147, 115, 65, 0.4);

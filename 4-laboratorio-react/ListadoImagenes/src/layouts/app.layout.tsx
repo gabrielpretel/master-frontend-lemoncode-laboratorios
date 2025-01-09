@@ -36,9 +36,11 @@ export const AppLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <div css={AppLayoutContainerStyle}>
       <HeaderComponent />
-      <div css={AppLayoutContentStyle}>
-        <div css={appMaxLayout}>{children}</div>
-      </div>
+      <main>
+        <div css={AppLayoutContentStyle}>
+          <div css={appMaxLayout}>{children}</div>
+        </div>
+      </main>
       <FooterComponent />
       <CartSidebarComponent />
     </div>

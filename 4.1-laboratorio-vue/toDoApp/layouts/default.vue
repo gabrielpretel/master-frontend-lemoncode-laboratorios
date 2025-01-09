@@ -42,6 +42,7 @@
     justify-items: center;
     background: linear-gradient(0deg, #ffedde 0%, transparent 25%),
       linear-gradient(to bottom, #ffedde 0%, transparent 25%);
+    background-size: contain;
   }
 
   .content-container {

@@ -3,6 +3,7 @@ import checker from "vite-plugin-checker";
 import legacy from "@vitejs/plugin-legacy";
 import { fileURLToPath } from "node:url";
 import svgr from "vite-plugin-svgr";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [
@@ -13,6 +14,19 @@ export default defineConfig({
       targets: ["defaults", "not IE 11"],
     }),
     svgr(),
+    react({
+      babel: {
+        plugins: [
+          [
+            "@emotion/babel-plugin",
+            {
+              autoLabel: "always",
+              labelFormat: "[local]", // Etiquetas descriptivas en clases
+            },
+          ],
+        ],
+      },
+    }),
   ],
   css: {
     modules: {

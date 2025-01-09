@@ -17,3 +17,15 @@ p {
   margin: 0;
   padding: 0;
 }
+
+.button-primary {
+  padding: 5px 10px;
+  border-radius: 8px;
+  background-color: #e8e8e4;
+  transition: 0.4s;
+
+  &:hover {
+    background-color: #383b42;
+    color: white;
+  }
+}

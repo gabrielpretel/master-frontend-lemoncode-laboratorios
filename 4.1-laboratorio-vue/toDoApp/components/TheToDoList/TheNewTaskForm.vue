@@ -1,25 +1,28 @@
 <script setup lang="ts">
   import { ref } from 'vue'
   import PlusIcon from '../assets/icons/plusIcon.svg'
-  import { useTasksHistory } from '../../composables/useTasksHistory'
+  import { useTasksLists } from '../../composables/useTasksLists'
   import AddIcon from '../assets/icons/addIcon.svg'
   import CompleteIcon from '../assets/icons/completeIcon.svg'
   import CrossIcon from '../assets/icons/crossIcon.svg'
+  import { useRandomColors } from 'composables/useRandomColors'
 
   const name = ref('')
   const description = ref('')
   const showNewTaskForm = ref(false)
   const showAlert = ref(false)
 
-  const taskHistory = useTasksHistory()
+  const taskHistory = useTasksLists()
+  const randomColor = useRandomColors()
 
   const onSubmit = () => {
     const newTask = {
-      id: generateId(),
+      id: taskHistory.generateId(),
       name: name.value,
       description: description.value,
       completed: false,
-      bgColor: getRandomColor(),
+      bgColor: randomColor.getRandomColor(),
+      editMode: false,
     }
 
     taskHistory.addTask(newTask)
@@ -35,26 +38,6 @@
     }, 5000)
   }
 
-  const generateId = () => {
-    return Math.random().toString(36).substring(2, 15)
-  }
-
-  const colors = [
-    '#FEC5BB',
-    '#FCD5CE',
-    '#FAE1DD',
-    '#F8EDEB',
-    '#E8E8E4',
-    '#D8E2DC',
-    '#ECE4DB',
-    '#FFE5D9',
-    '#FFD7BA',
-    '#FEC89A',
-  ]
-
-  const getRandomColor = (): string =>
-    colors[Math.floor(Math.random() * colors.length)]
-
   const onClick = () => {
     showNewTaskForm.value = !showNewTaskForm.value
   }
@@ -65,7 +48,6 @@
 </script>
 
 <template>
-  
   <button
     aria-label="New task"
     :class="!showNewTaskForm ? 'new-task' : 'new-task-open'"
@@ -73,7 +55,7 @@
   >
     <AddIcon class="new-task-icon" /> New task
   </button>
-  <transition name="expand">
+  <div v-auto-animate>
     <form
       @submit.prevent="onSubmit"
       v-if="showNewTaskForm"
@@ -85,8 +67,7 @@
         <PlusIcon /><span>Add task</span>
       </button>
     </form>
-  </transition>
-  <transition name="fade">
+
     <div class="alert-container" v-if="showAlert">
       <div class="alert-info">
         <CompleteIcon class="success-icon" />
@@ -96,7 +77,7 @@
         <CrossIcon class="cross-icon" />
       </button>
     </div>
-  </transition>
+  </div>
 </template>
 
 <style>
@@ -166,6 +147,7 @@
     & textarea {
       max-width: 600px;
       min-height: 100px;
+      resize: none;
     }
 
     & .add-task-button {
@@ -232,34 +214,12 @@
     align-self: center;
   }
 
-  .fade-enter-active,
+  /* .fade-enter-active,
   .fade-leave-active {
     transition: opacity 0.5s ease;
   }
   .fade-enter-from,
   .fade-leave-to {
     opacity: 0;
-  }
-
-  .expand-enter-active,
-  .expand-leave-active {
-    transition:
-      max-height 1.5s ease,
-      opacity 1.5s ease;
-    overflow: hidden;
-  }
-
-  .expand-enter-from,
-  .expand-leave-to {
-    max-height: 0;
-    opacity: 0;
-  }
-
-  .expand-enter-to,
-  .expand-leave-from {
-    max-height: 500px;
-    opacity: 1;
-  }
-
-  
+  } */
 </style>

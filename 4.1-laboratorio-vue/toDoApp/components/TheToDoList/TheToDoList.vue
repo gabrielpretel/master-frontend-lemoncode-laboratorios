@@ -1,85 +1,124 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import {
-    TaskRecord,
-    useTasksHistory,
-  } from '../../composables/useTasksHistory'
+  import { computed, ref } from 'vue'
+  import { TaskRecord, useTasksLists } from '../../composables/useTasksLists'
 
   import DeleteIcon from '../assets/icons/deleteIcon.svg'
   import CompleteIcon from '../assets/icons/completeIcon.svg'
   import IncompleteIcon from '../assets/icons/incompleteIcon.svg'
   import EditIcon from '../assets/icons/editIcon.svg'
+  import CrossIcon from '../assets/icons/crossIcon.svg'
   import DraggableIcon from '../assets/icons/draggableIcon.svg'
   import draggable from 'vuedraggable'
   import TheNewTaskForm from './TheNewTaskForm.vue'
-
-  const taskHistory = useTasksHistory()
-
-  let filteredTasks = ref<TaskRecord[]>(taskHistory.toDoList)
-  let selectedFilter = ref<FilterTask>('all')
-  let isEmptyCompletedTask = ref<boolean>()
-  let isEmptyIncompletedTask = ref<boolean>()
-
-  const onComplete = (currentTask: TaskRecord) => {
-    taskHistory.toDoList = taskHistory.toDoList.map((task) => {
-      if (task.id === currentTask.id) {
-        return { ...task, completed: !task.completed }
-      }
-      return task
-    })
-
-    filterTasks(selectedFilter.value)
-  }
-
-  const onDelete = (id: string) => {
-    taskHistory.toDoList = taskHistory.toDoList.filter((task) => task.id !== id)
-    filterTasks(selectedFilter.value)
-  }
+  import { toast } from 'vue-sonner'
+  import { useTransitions } from '../../composables/useTransitions'
 
   type FilterTask = 'all' | 'completed' | 'incompleted'
 
-  const filterTasks = (filter: FilterTask): TaskRecord[] => {
-    selectedFilter.value = filter
-    filteredTasks.value =
-      filter === 'all'
-        ? taskHistory.toDoList
-        : taskHistory.toDoList.filter((task) =>
-            filter === 'completed' ? task.completed : !task.completed,
-          )
+  let selectedFilter = ref<FilterTask>('all')
+  let isEmptyCompletedTask = ref<boolean>()
+  let isEmptyIncompletedTask = ref<boolean>()
+  let editName = ref<string>('')
+  let editDescription = ref<string>('')
 
-    isEmptyCompletedTask.value =
-      filter === 'completed' && filteredTasks.value.length === 0
+  const taskHistory = useTasksLists()
+  const { beforeEnter, enter, leave } = useTransitions()
 
-    isEmptyIncompletedTask.value =
-      filter === 'incompleted' && filteredTasks.value.length === 0
+  const onComplete = (currentTask: TaskRecord) => {
+    taskHistory.toDoList = taskHistory.toDoList.map((task: TaskRecord) =>
+      task.id === currentTask.id
+        ? { ...task, completed: !task.completed }
+        : task,
+    )
 
-    return filteredTasks.value
+    currentTask.completed
+      ? toast.success('Task incompleted.')
+      : toast.success('Task completed!')
   }
+
+  const onDelete = (id: string) => {
+    taskHistory.toDoList = taskHistory.toDoList.filter(
+      (task: TaskRecord) => task.id !== id,
+    )
+
+    toast.success('Task deleted.')
+  }
+
+  const onEdit = (element: TaskRecord) => {
+    editName.value = element.name
+    editDescription.value = element.description
+
+    toggleEditMode(element)
+  }
+
+  const toggleEditMode = (element: TaskRecord) => {
+    taskHistory.toDoList = taskHistory.toDoList.map((task: TaskRecord) =>
+      task.id !== element.id ? task : { ...task, editMode: !task.editMode },
+    )
+  }
+
+  const filteredTasks = computed(() => {
+    switch (selectedFilter.value) {
+      case 'completed':
+        return taskHistory.toDoList.filter(
+          (task: TaskRecord) => task.completed === true,
+        )
+      case 'incompleted':
+        return taskHistory.toDoList.filter(
+          (task: TaskRecord) => task.completed === false,
+        )
+      default:
+        return taskHistory.toDoList
+    }
+  })
 
   const syncOrder = (newOrder: TaskRecord[]) => {
     taskHistory.toDoList = [...newOrder]
   }
+
+  const onSubmit = (element: TaskRecord) => {
+    taskHistory.toDoList = taskHistory.toDoList.map((task: TaskRecord) =>
+      element.id === task.id
+        ? {
+            ...task,
+            name: editName,
+            description: editDescription,
+            editMode: !task.editMode,
+          }
+        : task,
+    )
+
+    toast.success('Task saved.')
+  }
 </script>
 
 <template>
+  <Toaster
+    position="top-center"
+    :toastOptions="{
+      class: 'my-toast',
+    }"
+  />
   <h2>List name</h2>
   <section class="todo-list-container">
     <div class="filters-container">
       <button
         class="button-primary"
-        @click="filterTasks('all')"
+        @click="selectedFilter = 'all'"
         :class="{ active: selectedFilter === 'all' }"
       >
-        All</button
-      ><button
+        All
+      </button>
+      <button
         class="button-primary"
-        @click="filterTasks('completed')"
+        @click="selectedFilter = 'completed'"
         :class="{ active: selectedFilter === 'completed' }"
       >
-        Completed</button
-      ><button
+        Completed
+      </button>
+      <button
         class="button-primary"
-        @click="filterTasks('incompleted')"
+        @click="selectedFilter = 'incompleted'"
         :class="{ active: selectedFilter === 'incompleted' }"
       >
         Incompleted
@@ -111,46 +150,83 @@
         ghost-class="dragging"
         item-key="id"
         @update:modelValue="syncOrder"
+        v-auto-animate
       >
         <template #item="{ element }">
           <li
             class="item"
             :key="element.id"
             :style="{
-              backgroundColor: !element.completed ? element.bgColor : '#fafafa',
+              backgroundColor:
+                !element.completed || element.editMode
+                  ? element.bgColor
+                  : '#fafafa',
             }"
-            :class="{ completed: element.completed }"
+            :class="{
+              itemEditmode: element.editMode,
+              completed: element.completed && !element.editMode,
+            }"
           >
-            <DraggableIcon class="drag-handle" />
-            <div class="task-content">
-              <div class="task-header">
-                <span>{{ element.name }}</span>
+            <div class="item-readonly" v-if="!element.editMode">
+              <DraggableIcon class="drag-handle" />
+              <div class="task-content">
+                <div class="task-header">
+                  <span>{{ element.name }}</span>
 
-                <div class="task-buttons">
-                  <button
-                    @click="onComplete(element)"
-                    aria-label="Complete Task"
-                  >
-                    <CompleteIcon v-if="!element.completed" class="icon" />
-                    <template v-else>
-                      <IncompleteIcon class="icon" />
-                    </template>
-                  </button>
-                  <button aria-label="Edit Task">
-                    <EditIcon class="icon" />
-                  </button>
-                  <button
-                    @click="onDelete(element.id)"
-                    aria-label="Delete Task"
-                  >
-                    <DeleteIcon class="icon" />
-                  </button>
+                  <div class="task-buttons">
+                    <button
+                      @click="onComplete(element)"
+                      aria-label="Complete Task"
+                    >
+                      <CompleteIcon v-if="!element.completed" class="icon" />
+                      <template v-else>
+                        <IncompleteIcon class="icon" />
+                      </template>
+                    </button>
+                    <button aria-label="Edit Task" @click="onEdit(element)">
+                      <EditIcon class="icon" />
+                    </button>
+                    <button
+                      @click="onDelete(element.id)"
+                      aria-label="Delete Task"
+                    >
+                      <DeleteIcon class="icon" />
+                    </button>
+                  </div>
                 </div>
+                <p v-if="element.description !== ''">
+                  {{ element.description }}
+                </p>
               </div>
-              <p v-if="element.description !== ''">
-                {{ element.description }}
-              </p>
             </div>
+            <transition
+              @before-enter="beforeEnter"
+              @enter="enter"
+              @leave="leave"
+            >
+              <div class="item-editmode" v-show="element.editMode">
+                <form
+                  @submit.prevent="onSubmit(element)"
+                  class="edit-form"
+                  :key="element.id"
+                >
+                  <p>Editing task...</p>
+                  <input type="text" v-model="editName" />
+                  <textarea v-model="editDescription"></textarea>
+                  <div class="control-buttons">
+                    <button class="button-primary save-button" type="submit">
+                      <CompleteIcon /> Save changes
+                    </button>
+                    <button
+                      class="button-primary"
+                      @click.prevent="onEdit(element)"
+                    >
+                      <CrossIcon /> Cancelar
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </transition>
           </li>
         </template>
       </draggable>
@@ -168,12 +244,39 @@
     position: relative;
   }
 
+  input,
+  textarea {
+    border-radius: 8px;
+    font-family: 'Anderson Grotesk', Arial, Helvetica, sans-serif;
+    border: none;
+    padding: 8px 20px;
+    background-color: #f6f8f9;
+
+    &:focus {
+      outline: 1px solid rgb(212, 212, 212);
+    }
+  }
+  .itemEditmode {
+    display: flex;
+    text-decoration: none;
+    opacity: 1;
+
+    & input {
+      max-width: 300px;
+    }
+
+    & textarea {
+      resize: none;
+      max-width: 600px;
+    }
+  }
+
   .task-list {
     margin-top: 20px;
 
     & .item {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       padding: 18px;
       border-radius: 8px;
       margin-bottom: 10px;
@@ -181,6 +284,47 @@
       transition:
         background-color 0.3s ease,
         scale 0.3s ease;
+
+      & .item-readonly {
+        display: flex;
+        flex-direction: row;
+      }
+
+      & .edit-form {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        gap: 10px;
+
+        & p {
+          padding-left: 8px;
+          font-weight: 900;
+          font-size: 1rem;
+        }
+      }
+
+      .control-buttons {
+        display: flex;
+        gap: 8px;
+
+        & button {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #f6f8f9;
+          gap: 4px;
+          font-size: 0.9rem;
+
+          &:hover {
+            background-color: #383b42;
+          }
+
+          & svg {
+            height: 18px;
+            width: 18px;
+          }
+        }
+      }
 
       & span {
         font-weight: 600;
@@ -258,7 +402,7 @@
   }
 
   .dragging {
-    opacity: 0.6;
+    opacity: 0;
     scale: 1.05;
     background-color: #f0f0f0;
   }
@@ -287,15 +431,36 @@
     }
   }
 
-  .button-primary {
-    padding: 5px 10px;
-    border-radius: 8px;
-    background-color: #e8e8e4;
-    transition: 0.4s;
+  .my-toast {
+    padding: 8px;
+  }
 
-    &:hover {
-      background-color: #383b42;
-      color: white;
-    }
+  ol[data-sonner-toaster] {
+    --width: 150px !important;
+  }
+
+  .expand-enter-active,
+  .expand-leave-active {
+    transition:
+      height 1s ease-in-out,
+      opacity 1s ease-in-out,
+      background-color 0.5s ease-in-out;
+    overflow: hidden;
+  }
+
+  .expand-enter-from,
+  .expand-leave-to {
+    height: 0;
+    opacity: 0;
+  }
+
+  .expand-enter-to,
+  .expand-leave-from {
+    height: 200px;
+    opacity: 1;
+  }
+
+  .item-editmode {
+    overflow: hidden;
   }
 </style>
