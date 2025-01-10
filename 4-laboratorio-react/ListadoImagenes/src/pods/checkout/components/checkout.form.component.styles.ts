@@ -17,8 +17,10 @@ const checkoutContainer = css`
   }
 
   & label {
-    padding-bottom: 10px;
+    display: flex;
+    margin-bottom: 10px;
     margin-right: 20px;
+    align-items: center;
   }
 
   input {
@@ -33,6 +35,41 @@ const checkoutContainer = css`
     padding: 10px 10px;
     border: 1px solid #31271e;
   }
+
+  input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border: 2px solid #31271e;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    margin: 0;
+    margin-right: 10px;
+    padding: 0;
+    background-color: #121212;
+    transition: all 0.3s ease;
+  }
+
+  input[type="radio"] + label {
+    margin-bottom: 0px;
+    transition: all 0.3s ease;
+  }
+
+  input[type="radio"]:checked {
+    border-color: #31271e;
+    background-color: #937341;
+  }
+
+  input[type="radio"]:checked + label {
+    text-shadow: 2px 0px 26px #937341;
+  }
+`;
+
+const radioGroup = css`
+  display: flex;
+  align-items: center;
 `;
 
 const checkoutBox = css`
@@ -82,6 +119,12 @@ const orderButton = css`
   &:hover {
     background: rgb(31, 32, 36);
   }
+
+  &:disabled {
+    background-color: grey;
+    color: rgb(90, 90, 90);
+    cursor: default;
+  }
 `;
 
 const orderListItems = css`
@@ -108,6 +151,25 @@ const orderItem = (img: string) => css`
     url(${img});
 `;
 
+const cartEmpty = css`
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+  color: #c4b998;
+  border: 1px solid #31271e;
+  background-color: #111318;
+
+  & p {
+    font-size: 20px;
+  }
+  & span {
+    font-weight: 300;
+  }
+`;
+
 export default {
   checkoutContainer,
   checkoutBox,
@@ -116,5 +178,7 @@ export default {
   address,
   orderButton,
   orderListItems,
-  orderItem
+  orderItem,
+  radioGroup,
+  cartEmpty,
 };
