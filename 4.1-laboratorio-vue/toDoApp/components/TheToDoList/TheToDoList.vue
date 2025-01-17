@@ -19,8 +19,13 @@
   let selectedFilter = ref<FilterTask>('all')
   let editName = ref<string>('')
   let editDescription = ref<string>('')
-  let isEmptyCompletedTask = ref<boolean>()
-  let isEmptyIncompletedTask = ref<boolean>()
+  const isEmptyTasks = computed(() => taskList.tasks.length === 0)
+  const isEmptyCompletedTasks = computed(() =>
+    taskList.tasks.every((task) => !task.completed),
+  )
+  const isEmptyIncompletedTasks = computed(() =>
+    taskList.tasks.every((task) => task.completed),
+  )
 
   const route = useRoute()
   const idList = computed(() => route.params.idList as string)
@@ -30,14 +35,12 @@
 
   const { beforeEnter, enter, leave } = useTransitions()
 
-
   const sortTasksByCompletion = (tasks: TaskRecord[]): TaskRecord[] => {
     return tasks.sort((a, b) => {
       if (a.completed === b.completed) return 0
       return a.completed ? 1 : -1
     })
   }
-
 
   const toggleTaskCompletion = (currentTask: TaskRecord) => {
     taskList.tasks = taskList.tasks.map((task) =>
@@ -53,12 +56,10 @@
       : toast.success('Task completed!')
   }
 
-
   const deleteTask = (id: string) => {
     taskList.tasks = taskList.tasks.filter((task) => task.id !== id)
     toast.success('Task deleted.')
   }
-
 
   const saveTaskEdits = (element: TaskRecord) => {
     taskList.tasks = taskList.tasks.map((task) =>
@@ -75,7 +76,6 @@
     toast.success('Task saved.')
   }
 
-
   const toggleEditMode = (element: TaskRecord) => {
     taskList.tasks = taskList.tasks.map((task) =>
       task.id !== element.id ? task : { ...task, editMode: !task.editMode },
@@ -88,7 +88,6 @@
     toggleEditMode(task)
   }
 
-
   const reorderTasks = (newOrder: TaskRecord[]) => {
     const remainingTasks = taskList.tasks.filter(
       (task) => !newOrder.some((newTask) => newTask.id === task.id),
@@ -96,7 +95,6 @@
 
     taskList.tasks = sortTasksByCompletion([...newOrder, ...remainingTasks])
   }
-
 
   const filteredTasks = computed(() => {
     switch (selectedFilter.value) {
@@ -119,11 +117,12 @@
   />
   <h2>{{ taskList.name }}</h2>
   <section class="todo-list-container">
-    <div class="filters-container">
+    <div class="filters-container" role="group" aria-label="Filter tasks">
       <button
         class="button-primary"
         @click="selectedFilter = 'all'"
         :class="{ active: selectedFilter === 'all' }"
+        aria-label="Show all tasks"
       >
         All
       </button>
@@ -131,6 +130,7 @@
         class="button-primary"
         @click="selectedFilter = 'completed'"
         :class="{ active: selectedFilter === 'completed' }"
+        aria-label="Show completed tasks"
       >
         Completed
       </button>
@@ -138,28 +138,37 @@
         class="button-primary"
         @click="selectedFilter = 'incompleted'"
         :class="{ active: selectedFilter === 'incompleted' }"
+        aria-label="Show incompleted tasks"
       >
         Incompleted
       </button>
     </div>
     <TheNewTaskForm />
     <div
-      class="empty-list empty-list--centered"
       v-if="
-        taskList.tasks.length === 0 ||
-        isEmptyCompletedTask ||
-        isEmptyIncompletedTask
+        isEmptyTasks ||
+        (selectedFilter === 'completed' && isEmptyCompletedTasks) ||
+        (selectedFilter === 'incompleted' && isEmptyIncompletedTasks)
       "
+      class="empty-list empty-list--centered"
+      role="alert"
+      aria-live="polite"
     >
-      <p v-if="taskList.tasks.length === 0">
+      <p v-if="isEmptyTasks">
         No tasks available at the moment. Use the button below to create a new
         note and start organizing your tasks effectively.
       </p>
-      <p v-else-if="isEmptyCompletedTask">No completed tasks yet.</p>
-      <p v-else>No incomplete tasks yet.</p>
+      <p v-else-if="selectedFilter === 'completed' && isEmptyCompletedTasks">
+        No completed tasks yet.
+      </p>
+      <p
+        v-else-if="selectedFilter === 'incompleted' && isEmptyIncompletedTasks"
+      >
+        No incomplete tasks yet.
+      </p>
     </div>
 
-    <div class="task-list">
+    <div class="task-list" role="list" aria-label="Task list">
       <draggable
         v-model="filteredTasks"
         group="tasks"
@@ -174,6 +183,7 @@
           <li
             class="item"
             :key="element.id"
+            role="listitem"
             :style="{
               backgroundColor:
                 !element.completed || element.editMode
@@ -184,17 +194,26 @@
               itemEditmode: element.editMode,
               completed: element.completed && !element.editMode,
             }"
+            :aria-label="element.name"
           >
             <div class="item-readonly" v-if="!element.editMode">
-              <DraggableIcon class="drag-handle" />
+              <DraggableIcon class="drag-handle" aria-label="Drag task" />
               <div class="task-content">
                 <div class="task-header">
                   <span>{{ element.name }}</span>
 
-                  <div class="task-buttons">
+                  <div
+                    class="task-buttons"
+                    role="group"
+                    aria-label="Task actions"
+                  >
                     <button
                       @click="toggleTaskCompletion(element)"
-                      aria-label="Complete Task"
+                      :aria-label="
+                        element.completed
+                          ? 'Mark task ' + element.name + ' as incomplete'
+                          : 'Mark task ' + element.name + ' as complete'
+                      "
                     >
                       <CompleteIcon v-if="!element.completed" class="icon" />
                       <template v-else>
@@ -202,14 +221,14 @@
                       </template>
                     </button>
                     <button
-                      aria-label="Edit Task"
+                      :aria-label="'Edit task ' + element.name"
                       @click="startTaskEditing(element)"
                     >
                       <EditIcon class="icon" />
                     </button>
                     <button
+                      :aria-label="'Delete task ' + element.name"
                       @click="deleteTask(element.id)"
-                      aria-label="Delete Task"
                     >
                       <DeleteIcon class="icon" />
                     </button>
@@ -230,17 +249,38 @@
                   @submit.prevent="saveTaskEdits(element)"
                   class="edit-form"
                   :key="element.id"
+                  aria-label="'Edit task ' + element.name"
                 >
                   <p>Editing task...</p>
-                  <input type="text" v-model="editName" />
-                  <textarea v-model="editDescription"></textarea>
+                  <label for="edit-name-{{ element.id }}" class="sr-only"
+                    >Task Name</label
+                  >
+                  <input
+                    id="edit-name-{{ element.id }}"
+                    type="text"
+                    v-model="editName"
+                    aria-label="Edit task name"
+                  />
+                  <label for="edit-description-{{ element.id }}" class="sr-only"
+                    >Task Description</label
+                  >
+                  <textarea
+                    id="edit-description-{{ element.id }}"
+                    v-model="editDescription"
+                    aria-label="Edit task description"
+                  ></textarea>
                   <div class="control-buttons">
-                    <button class="button-primary save-button" type="submit">
+                    <button
+                      class="button-primary save-button"
+                      type="submit"
+                      aria-label="Save task changes"
+                    >
                       <CompleteIcon /> Save changes
                     </button>
                     <button
                       class="button-primary"
                       @click.prevent="startTaskEditing(element)"
+                      aria-label="Cancel task editing"
                     >
                       <CrossIcon /> Cancelar
                     </button>
@@ -483,5 +523,22 @@
 
   .item-editmode {
     overflow: hidden;
+  }
+
+  label {
+    padding-left: 8px;
+    font-size: 0.9rem;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 </style>

@@ -52,32 +52,57 @@
 
 <template>
   <button
-    aria-label="New task"
+    aria-label="Create a new task"
     :class="!showNewTaskForm ? 'new-task' : 'new-task-open'"
     @click="onClick()"
   >
     <AddIcon class="new-task-icon" /> New task
   </button>
+
   <div v-auto-animate>
     <form
       @submit.prevent="onSubmit"
       v-if="showNewTaskForm"
       class="new-task-form"
+      aria-labelledby="new-task-form-title"
     >
-      <input type="text" v-model="name" placeholder="Task name" required />
-      <textarea v-model="description" placeholder="Write a note..."></textarea>
-      <button aria-label="Add Task" class="add-task-button">
+      <h2 id="new-task-form-title" class="sr-only">New Task Form</h2>
+
+      <label for="task-name" class="sr-only">Task Name</label>
+      <input
+        id="task-name"
+        type="text"
+        v-model="name"
+        placeholder="Task name"
+        required
+        aria-label="Enter the name of the task"
+      />
+
+      <label for="task-description" class="sr-only">Task Description</label>
+      <textarea
+        id="task-description"
+        v-model="description"
+        placeholder="Write a note..."
+        aria-label="Enter a description or note for the task"
+      ></textarea>
+
+      <button aria-label="Add this task" class="add-task-button">
         <PlusIcon /><span>Add task</span>
       </button>
     </form>
 
-    <div class="alert-container" v-if="showAlert">
+    <div
+      class="alert-container"
+      v-if="showAlert"
+      role="alert"
+      aria-live="assertive"
+    >
       <div class="alert-info">
-        <CompleteIcon class="success-icon" />
+        <CompleteIcon class="success-icon" aria-hidden="true" />
         <p>Task added successfully.</p>
       </div>
       <button aria-label="Close alert" @click="closeAlert" class="close-button">
-        <CrossIcon class="cross-icon" />
+        <CrossIcon class="cross-icon" aria-hidden="true" />
       </button>
     </div>
   </div>
@@ -216,13 +241,15 @@
     display: flex;
     align-self: center;
   }
-
-  /* .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 0.5s ease;
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
-  } */
 </style>
