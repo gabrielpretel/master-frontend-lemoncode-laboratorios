@@ -11,6 +11,7 @@ Plant the seed of your project with ViteSeed, a fast and solid foundation for yo
 - [Project Structure](#project-structure)
 - [Dependencies](#dependencies)
 - [DevDependencies](#devdependencies)
+- [Browser Compatibility](#browser-compatibility)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -120,9 +121,9 @@ viteseed-react/
 - `vite`: ^5.3.5
 - `vite-plugin-checker`: ^0.7.2
 
-## Broswser compatibility
+## Browser Compatibility
 
-To ensure compatibility with older browsers, ViteSeed uses the @vitejs/plugin-legacy plugin. This plugin adds support for legacy browsers by transpiling the necessary JavaScript code.
+To ensure compatibility with older browsers, ViteSeed uses the `@vitejs/plugin-legacy` plugin. This plugin adds support for legacy browsers by transpiling the necessary JavaScript code.
 
 ## Contributing
 

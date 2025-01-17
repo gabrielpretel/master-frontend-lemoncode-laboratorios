@@ -68,6 +68,7 @@ export const useTasksLists = defineStore(
       addList,
       taskList,
       generateId,
+      getTasks: (listId: string) => taskList.value[listId],
     }
   },
   {

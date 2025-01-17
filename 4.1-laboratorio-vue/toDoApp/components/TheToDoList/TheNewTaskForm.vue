@@ -1,16 +1,19 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { computed, ref } from 'vue'
+  import { useRoute } from 'vue-router'
   import PlusIcon from '../assets/icons/plusIcon.svg'
   import { useTasksLists } from '../../composables/useTasksLists'
   import AddIcon from '../assets/icons/addIcon.svg'
   import CompleteIcon from '../assets/icons/completeIcon.svg'
   import CrossIcon from '../assets/icons/crossIcon.svg'
-  import { useRandomColors } from 'composables/useRandomColors'
+  import { useRandomColors } from '../../composables/useRandomColors'
 
   const name = ref('')
   const description = ref('')
   const showNewTaskForm = ref(false)
   const showAlert = ref(false)
+  const route = useRoute()
+  const idList = computed(() => route.params.idList as string)
 
   const taskHistory = useTasksLists()
   const randomColor = useRandomColors()
@@ -25,7 +28,7 @@
       editMode: false,
     }
 
-    taskHistory.addTask(newTask)
+    taskHistory.addTask(newTask, idList.value)
 
     name.value = ''
     description.value = ''

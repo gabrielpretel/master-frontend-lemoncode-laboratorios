@@ -1,6 +1,12 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue'
   import { TaskRecord, useTasksLists } from '../../composables/useTasksLists'
+  import { toast } from 'vue-sonner'
+  import { useRoute } from 'vue-router'
+
+  import draggable from 'vuedraggable'
+  import TheNewTaskForm from './TheNewTaskForm.vue'
+  import { useTransitions } from '../../composables/useTransitions'
 
   import DeleteIcon from '../assets/icons/deleteIcon.svg'
   import CompleteIcon from '../assets/icons/completeIcon.svg'
@@ -8,88 +14,100 @@
   import EditIcon from '../assets/icons/editIcon.svg'
   import CrossIcon from '../assets/icons/crossIcon.svg'
   import DraggableIcon from '../assets/icons/draggableIcon.svg'
-  import draggable from 'vuedraggable'
-  import TheNewTaskForm from './TheNewTaskForm.vue'
-  import { toast } from 'vue-sonner'
-  import { useTransitions } from '../../composables/useTransitions'
 
   type FilterTask = 'all' | 'completed' | 'incompleted'
-
   let selectedFilter = ref<FilterTask>('all')
-  let isEmptyCompletedTask = ref<boolean>()
-  let isEmptyIncompletedTask = ref<boolean>()
   let editName = ref<string>('')
   let editDescription = ref<string>('')
+  let isEmptyCompletedTask = ref<boolean>()
+  let isEmptyIncompletedTask = ref<boolean>()
+
+  const route = useRoute()
+  const idList = computed(() => route.params.idList as string)
 
   const taskHistory = useTasksLists()
+  const taskList = taskHistory.getTasks(idList.value)
+
   const { beforeEnter, enter, leave } = useTransitions()
 
-  const onComplete = (currentTask: TaskRecord) => {
-    taskHistory.toDoList = taskHistory.toDoList.map((task: TaskRecord) =>
+
+  const sortTasksByCompletion = (tasks: TaskRecord[]): TaskRecord[] => {
+    return tasks.sort((a, b) => {
+      if (a.completed === b.completed) return 0
+      return a.completed ? 1 : -1
+    })
+  }
+
+
+  const toggleTaskCompletion = (currentTask: TaskRecord) => {
+    taskList.tasks = taskList.tasks.map((task) =>
       task.id === currentTask.id
         ? { ...task, completed: !task.completed }
         : task,
     )
+
+    taskList.tasks = sortTasksByCompletion(taskList.tasks)
 
     currentTask.completed
       ? toast.success('Task incompleted.')
       : toast.success('Task completed!')
   }
 
-  const onDelete = (id: string) => {
-    taskHistory.toDoList = taskHistory.toDoList.filter(
-      (task: TaskRecord) => task.id !== id,
-    )
 
+  const deleteTask = (id: string) => {
+    taskList.tasks = taskList.tasks.filter((task) => task.id !== id)
     toast.success('Task deleted.')
   }
 
-  const onEdit = (element: TaskRecord) => {
-    editName.value = element.name
-    editDescription.value = element.description
 
-    toggleEditMode(element)
+  const saveTaskEdits = (element: TaskRecord) => {
+    taskList.tasks = taskList.tasks.map((task) =>
+      task.id === element.id
+        ? {
+            ...task,
+            name: editName.value,
+            description: editDescription.value,
+            editMode: false,
+          }
+        : task,
+    )
+    taskHistory.taskList[idList.value] = { ...taskList }
+    toast.success('Task saved.')
   }
 
+
   const toggleEditMode = (element: TaskRecord) => {
-    taskHistory.toDoList = taskHistory.toDoList.map((task: TaskRecord) =>
+    taskList.tasks = taskList.tasks.map((task) =>
       task.id !== element.id ? task : { ...task, editMode: !task.editMode },
     )
   }
 
+  const startTaskEditing = (task: TaskRecord) => {
+    editName.value = task.name
+    editDescription.value = task.description
+    toggleEditMode(task)
+  }
+
+
+  const reorderTasks = (newOrder: TaskRecord[]) => {
+    const remainingTasks = taskList.tasks.filter(
+      (task) => !newOrder.some((newTask) => newTask.id === task.id),
+    )
+
+    taskList.tasks = sortTasksByCompletion([...newOrder, ...remainingTasks])
+  }
+
+
   const filteredTasks = computed(() => {
     switch (selectedFilter.value) {
       case 'completed':
-        return taskHistory.toDoList.filter(
-          (task: TaskRecord) => task.completed === true,
-        )
+        return taskList.tasks.filter((task) => task.completed === true)
       case 'incompleted':
-        return taskHistory.toDoList.filter(
-          (task: TaskRecord) => task.completed === false,
-        )
+        return taskList.tasks.filter((task) => task.completed === false)
       default:
-        return taskHistory.toDoList
+        return taskList.tasks
     }
   })
-
-  const syncOrder = (newOrder: TaskRecord[]) => {
-    taskHistory.toDoList = [...newOrder]
-  }
-
-  const onSubmit = (element: TaskRecord) => {
-    taskHistory.toDoList = taskHistory.toDoList.map((task: TaskRecord) =>
-      element.id === task.id
-        ? {
-            ...task,
-            name: editName,
-            description: editDescription,
-            editMode: !task.editMode,
-          }
-        : task,
-    )
-
-    toast.success('Task saved.')
-  }
 </script>
 
 <template>
@@ -99,7 +117,7 @@
       class: 'my-toast',
     }"
   />
-  <h2>List name</h2>
+  <h2>{{ taskList.name }}</h2>
   <section class="todo-list-container">
     <div class="filters-container">
       <button
@@ -128,12 +146,12 @@
     <div
       class="empty-list empty-list--centered"
       v-if="
-        taskHistory.toDoList.length === 0 ||
+        taskList.tasks.length === 0 ||
         isEmptyCompletedTask ||
         isEmptyIncompletedTask
       "
     >
-      <p v-if="taskHistory.toDoList.length === 0">
+      <p v-if="taskList.tasks.length === 0">
         No tasks available at the moment. Use the button below to create a new
         note and start organizing your tasks effectively.
       </p>
@@ -149,7 +167,7 @@
         animation="200"
         ghost-class="dragging"
         item-key="id"
-        @update:modelValue="syncOrder"
+        @update:modelValue="reorderTasks"
         v-auto-animate
       >
         <template #item="{ element }">
@@ -175,7 +193,7 @@
 
                   <div class="task-buttons">
                     <button
-                      @click="onComplete(element)"
+                      @click="toggleTaskCompletion(element)"
                       aria-label="Complete Task"
                     >
                       <CompleteIcon v-if="!element.completed" class="icon" />
@@ -183,11 +201,14 @@
                         <IncompleteIcon class="icon" />
                       </template>
                     </button>
-                    <button aria-label="Edit Task" @click="onEdit(element)">
+                    <button
+                      aria-label="Edit Task"
+                      @click="startTaskEditing(element)"
+                    >
                       <EditIcon class="icon" />
                     </button>
                     <button
-                      @click="onDelete(element.id)"
+                      @click="deleteTask(element.id)"
                       aria-label="Delete Task"
                     >
                       <DeleteIcon class="icon" />
@@ -206,7 +227,7 @@
             >
               <div class="item-editmode" v-show="element.editMode">
                 <form
-                  @submit.prevent="onSubmit(element)"
+                  @submit.prevent="saveTaskEdits(element)"
                   class="edit-form"
                   :key="element.id"
                 >
@@ -219,7 +240,7 @@
                     </button>
                     <button
                       class="button-primary"
-                      @click.prevent="onEdit(element)"
+                      @click.prevent="startTaskEditing(element)"
                     >
                       <CrossIcon /> Cancelar
                     </button>
