@@ -72,6 +72,7 @@
     justify-content: center;
     background-color: #fff;
     box-shadow: 0px 0px 20px #f9dcd0;
+    border: 1px solid #d9c8c05e;
     padding: 18px;
     border-radius: 40px;
     width: 600px;

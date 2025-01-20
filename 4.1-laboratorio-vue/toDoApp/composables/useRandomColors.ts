@@ -1,14 +1,4 @@
-const colors = [
-  '#FEC5BB',
-  '#FCD5CE',
-  '#fff4f0',
-  '#f3f3f3',
-  '#feebd6',
-  '#ECE4DB',
-  '#FFE5D9',
-  '#FFD7BA',
-  '#FEC89A',
-]
+const colors = ['#FFF8F5', '#FFF3ED', '#FFEDE4', '#FFE8DC', '#FFE2D3']
 
 export const useRandomColors = () => {
   const getRandomColor = (): string =>

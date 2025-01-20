@@ -287,18 +287,18 @@
                   ></textarea>
                   <div class="control-buttons">
                     <button
-                      class="save-button"
-                      type="submit"
-                      aria-label="Save task changes"
-                    >
-                      <CompleteIcon /> Save changes
-                    </button>
-                    <button
                       class="cancel-button"
                       @click.prevent="startTaskEditing(element)"
                       aria-label="Cancel task editing"
                     >
                       <CrossIcon /> Cancelar
+                    </button>
+                    <button
+                      class="save-button"
+                      type="submit"
+                      aria-label="Save task changes"
+                    >
+                      <CompleteIcon /> Save changes
                     </button>
                   </div>
                 </form>
@@ -334,7 +334,8 @@
       transition:
         background-color 0.3s ease,
         scale 0.3s ease;
-      box-shadow: 0px 0px 20px #f9dcd0;
+      box-shadow: 0px 8px 20px #f9dcd0;
+      border: 1px solid #d9c8c05e;
 
       & .item-readonly {
         display: flex;
@@ -356,6 +357,7 @@
 
       .control-buttons {
         display: flex;
+        justify-content: end;
         gap: 8px;
 
         & button {
@@ -499,7 +501,7 @@
     transition: all 0.4s ease;
 
     &:hover {
-      text-decoration: underline;
+      text-shadow: 0px 0px 20px #ffbb98;
     }
   }
 </style>

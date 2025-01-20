@@ -163,6 +163,7 @@
       padding: 8px 20px;
       background-color: #fff;
       box-shadow: 0px 0px 20px #f9dcd0;
+      border: 1px solid #d9c8c05e;
 
       &:focus {
         outline: 1px solid rgb(212, 212, 212);
@@ -188,6 +189,7 @@
       transition: 0.4s;
       font-size: 14px;
       box-shadow: 0px 0px 20px #f9dcd0;
+      border: 1px solid #d9c8c05e;
 
       & svg {
         height: 16px;
@@ -207,7 +209,7 @@
     align-items: center;
     border-radius: 8px;
     padding: 8px;
-    background-color: #bccca3;
+    background-color: #00755d;
     margin-top: 10px;
 
     & .alert-info {

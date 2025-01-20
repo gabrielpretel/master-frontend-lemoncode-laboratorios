@@ -26,6 +26,7 @@
     'Movies to Watch',
     'Places to Visit',
     'Healthy Recipes',
+    'Meditation Plan',
   ])
 
   const router = useRouter()
@@ -157,8 +158,8 @@
     aria-live="polite"
   >
     <p>
-      No lists available at the moment. Use the button above to create a new
-      list and start organizing your tasks effectively.
+      <i>No lists available at the moment</i>. Use the <b>button above</b> to
+      create a <i>new list</i> and start organizing your tasks effectively.
     </p>
   </div>
 
@@ -274,18 +275,18 @@
 
                     <div class="control-buttons">
                       <button
-                        class="save-button"
-                        type="submit"
-                        aria-label="Save changes to the list"
-                      >
-                        <CompleteIcon /> Save changes
-                      </button>
-                      <button
                         class="cancel-button"
                         @click.prevent.stop="startListEditing(element)"
                         aria-label="Cancel editing the list"
                       >
                         <CrossIcon /> Cancel
+                      </button>
+                      <button
+                        class="save-button"
+                        type="submit"
+                        aria-label="Save changes to the list"
+                      >
+                        <CompleteIcon /> Save changes
                       </button>
                     </div>
                   </form>
@@ -356,6 +357,7 @@
       font-size: 14px;
       text-align: center;
       box-shadow: 0px 0px 20px #f9dcd0;
+      border: 1px solid #d9c8c05e;
 
       & svg {
         height: 16px;
@@ -380,7 +382,8 @@
       margin-bottom: 10px;
       max-width: 600px;
       transition: all 0.3s ease;
-      box-shadow: 0px 0px 20px #f9dcd0;
+      box-shadow: 0px 8px 20px #f9dcd0;
+      border: 1px solid #d9c8c05e;
 
       & .item-readonly {
         display: flex;
@@ -403,6 +406,7 @@
 
       .control-buttons {
         display: flex;
+        justify-content: end;
         gap: 8px;
 
         & button {
@@ -536,7 +540,7 @@
     font-size: 0.9rem;
     color: #191919;
     background-color: #ffff;
-    /* border: 1px solid #007bff; */
+    border: 1px solid #d9c8c05e;
     border-radius: 8px;
     cursor: pointer;
     box-shadow: 0px 0px 20px #f9dcd0;
