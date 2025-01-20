@@ -453,7 +453,7 @@
   .completed {
     text-decoration: line-through;
     background-color: #919191;
-    opacity: 0.5;
+    opacity: 0.6;
 
     & .tag {
       text-decoration: dashed;

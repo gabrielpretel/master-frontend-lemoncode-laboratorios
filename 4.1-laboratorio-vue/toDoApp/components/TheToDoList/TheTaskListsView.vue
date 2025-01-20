@@ -261,7 +261,7 @@
                     :key="element.id"
                     aria-labelledby="'Edit list ' + element.name"
                   >
-                    <p class="sr-only">Editing list...</p>
+                    <p>Editing list...</p>
 
                     <label for="edit-list-name" class="sr-only">
                       Edit List Name
@@ -550,7 +550,7 @@
   }
 
   .tag:hover {
-    background-color: #191919;
+    background-color: #383b42;
     color: #fff;
   }
 </style>

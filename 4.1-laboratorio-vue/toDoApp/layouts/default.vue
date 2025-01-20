@@ -77,5 +77,9 @@
     border-radius: 40px;
     width: 600px;
     margin: 20px;
+
+    p {
+      font-weight: 600;
+    }
   }
 </style>

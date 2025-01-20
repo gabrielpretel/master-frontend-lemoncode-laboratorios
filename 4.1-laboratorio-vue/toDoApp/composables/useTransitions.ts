@@ -2,8 +2,8 @@ export const useTransitions = () => {
   const beforeEnter = (el: Element) => {
     const htmlEl = el as HTMLElement
     document.body.style.overflow = 'hidden'
-    htmlEl.style.height = '0'
-    htmlEl.style.opacity = '0'
+    htmlEl.style.height = `50px`
+    htmlEl.style.opacity = '0.5'
   }
 
   const enter = (el: Element) => {

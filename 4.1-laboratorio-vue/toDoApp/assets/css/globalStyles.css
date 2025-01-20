@@ -16,6 +16,15 @@ button {
 p {
   margin: 0;
   padding: 0;
+  color: #383b42;
+  font-weight: 200;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: #383b42;
 }
 
 .button-primary {
@@ -89,7 +98,7 @@ textarea {
 
   & input,
   textarea {
-    max-width: 300px;
+    /* max-width: 300px; */
     box-shadow: none;
     background-color: #fff;
   }
