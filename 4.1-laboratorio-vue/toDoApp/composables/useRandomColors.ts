@@ -1,10 +1,9 @@
 const colors = [
   '#FEC5BB',
   '#FCD5CE',
-  '#FAE1DD',
-  '#F8EDEB',
-  '#E8E8E4',
-  '#D8E2DC',
+  '#fff4f0',
+  '#f3f3f3',
+  '#feebd6',
   '#ECE4DB',
   '#FFE5D9',
   '#FFD7BA',

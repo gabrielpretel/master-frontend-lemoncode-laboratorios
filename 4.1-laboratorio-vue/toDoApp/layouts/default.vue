@@ -40,9 +40,24 @@
     width: 100%;
     height: 100%;
     justify-items: center;
-    background: linear-gradient(0deg, #ffedde 0%, transparent 25%),
-      linear-gradient(to bottom, #ffedde 0%, transparent 25%);
-    background-size: contain;
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+    /* background: linear-gradient(0deg, #ffedde 0%, transparent 25%),
+      linear-gradient(to bottom, #ffedde 0%, transparent 25%); */
+  }
+
+  .app-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url(../assets/images/taskly_tree.webp) no-repeat right center;
+    background-size: cover;
+    opacity: 0.2;
+    z-index: -1;
   }
 
   .content-container {
@@ -55,11 +70,8 @@
   footer {
     display: flex;
     justify-content: center;
-    background-color: #fcf6f1;
-    box-shadow:
-      rgba(12, 20, 66, 0.03) 0px 1px 3px,
-      rgba(12, 20, 66, 0.04) 0px 8px 16px,
-      rgba(12, 20, 66, 0.04) 0px 16px 40px;
+    background-color: #fff;
+    box-shadow: 0px 0px 20px #f9dcd0;
     padding: 18px;
     border-radius: 40px;
     width: 600px;

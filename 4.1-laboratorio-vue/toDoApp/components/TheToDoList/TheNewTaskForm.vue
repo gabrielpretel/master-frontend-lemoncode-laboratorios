@@ -161,7 +161,8 @@
       font-family: 'Anderson Grotesk', Arial, Helvetica, sans-serif;
       border: none;
       padding: 8px 20px;
-      background-color: #f6f8f9;
+      background-color: #fff;
+      box-shadow: 0px 0px 20px #f9dcd0;
 
       &:focus {
         outline: 1px solid rgb(212, 212, 212);
@@ -183,9 +184,10 @@
       width: 110px;
       border-radius: 8px;
       padding: 8px;
-      background-color: #f2f4f6;
+      background-color: #fff;
       transition: 0.4s;
       font-size: 14px;
+      box-shadow: 0px 0px 20px #f9dcd0;
 
       & svg {
         height: 16px;
@@ -205,7 +207,7 @@
     align-items: center;
     border-radius: 8px;
     padding: 8px;
-    background-color: #d5ffe67a;
+    background-color: #bccca3;
     margin-top: 10px;
 
     & .alert-info {
@@ -216,7 +218,7 @@
     & p {
       font-weight: 400;
       margin-left: 5px;
-      color: #66e097;
+      color: white;
       font-size: 0.9rem;
     }
   }
@@ -224,7 +226,7 @@
   .cross-icon {
     height: 1rem;
     transition: 0.4s;
-    color: #66e097;
+    color: white;
 
     &:hover {
       scale: 1.2;
@@ -233,23 +235,12 @@
 
   .success-icon {
     fill: white;
-    color: #66e097;
+    color: white;
     height: 20px;
   }
 
   .close-button {
     display: flex;
     align-self: center;
-  }
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
   }
 </style>

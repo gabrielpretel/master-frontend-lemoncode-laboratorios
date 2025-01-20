@@ -2,7 +2,7 @@
   import { computed, ref } from 'vue'
   import { TaskRecord, useTasksLists } from '../../composables/useTasksLists'
   import { toast } from 'vue-sonner'
-  import { useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
 
   import draggable from 'vuedraggable'
   import TheNewTaskForm from './TheNewTaskForm.vue'
@@ -28,12 +28,17 @@
   )
 
   const route = useRoute()
+  const router = useRouter()
   const idList = computed(() => route.params.idList as string)
 
   const taskHistory = useTasksLists()
   const taskList = taskHistory.getTasks(idList.value)
 
   const { beforeEnter, enter, leave } = useTransitions()
+
+  const navigateToList = () => {
+    router.push('/')
+  }
 
   const sortTasksByCompletion = (tasks: TaskRecord[]): TaskRecord[] => {
     return tasks.sort((a, b) => {
@@ -115,7 +120,10 @@
       class: 'my-toast',
     }"
   />
-  <h2>{{ taskList.name }}</h2>
+  <button @click="navigateToList" class="back-button">< Back to lists</button>
+  <h2 tabindex="0" :aria-label="'Task list' + taskList.name">
+    {{ taskList.name }}
+  </h2>
   <section class="todo-list-container">
     <div class="filters-container" role="group" aria-label="Filter tasks">
       <button
@@ -170,7 +178,7 @@
 
     <div class="task-list" role="list" aria-label="Task list">
       <draggable
-        v-model="filteredTasks"
+        v-model="taskList.tasks"
         group="tasks"
         handle=".drag-handle"
         animation="200"
@@ -183,6 +191,7 @@
           <li
             class="item"
             :key="element.id"
+            v-if="filteredTasks.includes(element)"
             role="listitem"
             :style="{
               backgroundColor:
@@ -196,12 +205,19 @@
             }"
             :aria-label="element.name"
           >
-            <div class="item-readonly" v-if="!element.editMode">
+            <div class="item-readonly" v-show="!element.editMode">
               <DraggableIcon class="drag-handle" aria-label="Drag task" />
               <div class="task-content">
                 <div class="task-header">
-                  <span>{{ element.name }}</span>
-
+                  <span
+                    :aria-label="
+                      element.completed
+                        ? 'Completed ' + element.name
+                        : element.name
+                    "
+                    tabindex="0"
+                    >{{ element.name }}</span
+                  >
                   <div
                     class="task-buttons"
                     role="group"
@@ -234,7 +250,7 @@
                     </button>
                   </div>
                 </div>
-                <p v-if="element.description !== ''">
+                <p v-if="element.description !== ''" tabindex="0">
                   {{ element.description }}
                 </p>
               </div>
@@ -271,14 +287,14 @@
                   ></textarea>
                   <div class="control-buttons">
                     <button
-                      class="button-primary save-button"
+                      class="save-button"
                       type="submit"
                       aria-label="Save task changes"
                     >
                       <CompleteIcon /> Save changes
                     </button>
                     <button
-                      class="button-primary"
+                      class="cancel-button"
                       @click.prevent="startTaskEditing(element)"
                       aria-label="Cancel task editing"
                     >
@@ -305,33 +321,6 @@
     position: relative;
   }
 
-  input,
-  textarea {
-    border-radius: 8px;
-    font-family: 'Anderson Grotesk', Arial, Helvetica, sans-serif;
-    border: none;
-    padding: 8px 20px;
-    background-color: #f6f8f9;
-
-    &:focus {
-      outline: 1px solid rgb(212, 212, 212);
-    }
-  }
-  .itemEditmode {
-    display: flex;
-    text-decoration: none;
-    opacity: 1;
-
-    & input {
-      max-width: 300px;
-    }
-
-    & textarea {
-      resize: none;
-      max-width: 600px;
-    }
-  }
-
   .task-list {
     margin-top: 20px;
 
@@ -345,6 +334,7 @@
       transition:
         background-color 0.3s ease,
         scale 0.3s ease;
+      box-shadow: 0px 0px 20px #f9dcd0;
 
       & .item-readonly {
         display: flex;
@@ -375,15 +365,27 @@
           background-color: #f6f8f9;
           gap: 4px;
           font-size: 0.9rem;
+          padding: 5px 10px;
+          border-radius: 8px;
+          transition: 0.4s;
 
           &:hover {
             background-color: #383b42;
+            color: white;
           }
 
           & svg {
             height: 18px;
             width: 18px;
           }
+        }
+        .save-button {
+          background-color: #ffbb98;
+          box-shadow: none;
+        }
+        .cancel-button {
+          background-color: #fff;
+          box-shadow: none;
         }
       }
 
@@ -431,28 +433,6 @@
     }
   }
 
-  .empty-list {
-    color: #383b42;
-    font-size: 0.9rem;
-    margin: 20px 0;
-    background-color: #f6f8f9;
-    border-radius: 8px;
-    padding: 20px;
-  }
-
-  .empty-list--centered {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .empty-list p {
-    margin: 10px 0;
-    line-height: 1.6;
-    font-size: 1rem;
-  }
-
   .drag-handle {
     cursor: grab;
     height: 20px;
@@ -472,6 +452,10 @@
     text-decoration: line-through;
     background-color: #919191;
     opacity: 0.5;
+
+    & .tag {
+      text-decoration: dashed;
+    }
   }
 
   .completed-message {
@@ -500,27 +484,6 @@
     --width: 150px !important;
   }
 
-  .expand-enter-active,
-  .expand-leave-active {
-    transition:
-      height 1s ease-in-out,
-      opacity 1s ease-in-out,
-      background-color 0.5s ease-in-out;
-    overflow: hidden;
-  }
-
-  .expand-enter-from,
-  .expand-leave-to {
-    height: 0;
-    opacity: 0;
-  }
-
-  .expand-enter-to,
-  .expand-leave-from {
-    height: 200px;
-    opacity: 1;
-  }
-
   .item-editmode {
     overflow: hidden;
   }
@@ -530,15 +493,13 @@
     font-size: 0.9rem;
   }
 
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+  .back-button {
+    font-size: 1rem;
+    font-weight: 800;
+    transition: all 0.4s ease;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 </style>

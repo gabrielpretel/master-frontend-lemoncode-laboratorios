@@ -19,6 +19,14 @@
   const showNewListForm = ref<boolean>(false)
   const name = ref<string>('')
   let editName = ref<string>('')
+  const suggestions = ref([
+    'Shopping List',
+    'Books to Read',
+    'Gift Ideas',
+    'Movies to Watch',
+    'Places to Visit',
+    'Healthy Recipes',
+  ])
 
   const router = useRouter()
   const lists = useTasksLists()
@@ -92,6 +100,11 @@
   const reorderLists = (newOrder: TaskList[]) => {
     taskListArray.value = [...newOrder]
   }
+
+  const createSuggestedList = (suggestion: string) => {
+    name.value = suggestion
+    createNewList()
+  }
 </script>
 
 <template>
@@ -116,7 +129,7 @@
     <form
       @submit.prevent="createNewList"
       class="new-list-form"
-      v-show="showNewListForm"
+      v-if="showNewListForm"
       aria-labelledby="new-list-form-title"
     >
       <h2 id="new-list-form-title" class="sr-only">New List Form</h2>
@@ -149,6 +162,24 @@
     </p>
   </div>
 
+  <div class="empty-state" v-if="taskListArray.length === 0">
+    <div class="suggested-tags">
+      <p class="empty-text">No lists yet? Try starting with:</p>
+      <div class="tags" role="list">
+        <button
+          v-for="suggestion in suggestions"
+          :key="suggestion"
+          class="tag"
+          @click="createSuggestedList(suggestion)"
+          role="listitem"
+          aria-label="Create list: {{ suggestion }}"
+        >
+          {{ suggestion }}
+        </button>
+      </div>
+    </div>
+  </div>
+
   <section>
     <div class="task-list" role="list" aria-label="Task lists">
       <draggable
@@ -173,14 +204,14 @@
                     : '#fafafa',
               }"
               :class="{
+                link: !element.editMode,
                 itemEditmode: element.editMode,
                 completed: element.completed && !element.editMode,
               }"
               role="link"
               tabindex="0"
-              @click="navigateToList(element.id)"
-              @keydown.enter="navigateToList(element.id)"
-              @keydown.space.prevent="navigateToList(element.id)"
+              @click.stop="navigateToList(element.id)"
+              @keydown.enter.stop="navigateToList(element.id)"
               :aria-label="'Navigate to task list ' + element.name"
             >
               <div class="item-readonly" v-if="!element.editMode">
@@ -196,12 +227,14 @@
                     >
                       <button
                         @click.stop="startListEditing(element)"
+                        @keydown.enter.stop="startListEditing(element)"
                         :aria-label="'Edit list ' + element.name"
                       >
                         <EditIcon class="icon" />
                       </button>
                       <button
                         @click.stop="deleteList(element.id)"
+                        @keydown.enter.stop="deleteList(element.id)"
                         :aria-label="'Delete list ' + element.name"
                       >
                         <DeleteIcon class="icon" />
@@ -221,15 +254,17 @@
                 <div class="item-editmode" v-show="element.editMode">
                   <form
                     @submit.prevent.stop="saveListEdits(element)"
+                    @click.stop
+                    @keydown.stop
                     class="edit-form"
                     :key="element.id"
                     aria-labelledby="'Edit list ' + element.name"
                   >
                     <p class="sr-only">Editing list...</p>
 
-                    <label for="edit-list-name" class="sr-only"
-                      >Edit List Name</label
-                    >
+                    <label for="edit-list-name" class="sr-only">
+                      Edit List Name
+                    </label>
                     <input
                       id="edit-list-name"
                       type="text"
@@ -239,14 +274,14 @@
 
                     <div class="control-buttons">
                       <button
-                        class="button-primary save-button"
+                        class="save-button"
                         type="submit"
                         aria-label="Save changes to the list"
                       >
                         <CompleteIcon /> Save changes
                       </button>
                       <button
-                        class="button-primary"
+                        class="cancel-button"
                         @click.prevent.stop="startListEditing(element)"
                         aria-label="Cancel editing the list"
                       >
@@ -311,27 +346,16 @@
     max-width: 600px;
     gap: 10px;
 
-    & input,
-    textarea {
-      border-radius: 8px;
-      font-family: 'Anderson Grotesk', Arial, Helvetica, sans-serif;
-      border: none;
-      padding: 8px 20px;
-      background-color: #f6f8f9;
-
-      &:focus {
-        outline: 1px solid rgb(212, 212, 212);
-      }
-    }
     .add-list-button {
       display: flex;
       width: 110px;
       border-radius: 8px;
       padding: 8px;
-      background-color: #f2f4f6;
+      background-color: #fff;
       transition: 0.4s;
       font-size: 14px;
       text-align: center;
+      box-shadow: 0px 0px 20px #f9dcd0;
 
       & svg {
         height: 16px;
@@ -355,7 +379,8 @@
       border-radius: 8px;
       margin-bottom: 10px;
       max-width: 600px;
-      transition: scale 0.3s ease;
+      transition: all 0.3s ease;
+      box-shadow: 0px 0px 20px #f9dcd0;
 
       & .item-readonly {
         display: flex;
@@ -367,17 +392,13 @@
         flex-direction: column;
         flex: 1;
         gap: 10px;
+        cursor: auto;
 
         & p {
           padding-left: 8px;
           font-weight: 900;
           font-size: 1rem;
         }
-      }
-
-      &:hover {
-        scale: 1.03;
-        cursor: pointer;
       }
 
       .control-buttons {
@@ -391,15 +412,27 @@
           background-color: #f6f8f9;
           gap: 4px;
           font-size: 0.9rem;
+          padding: 5px 10px;
+          border-radius: 8px;
+          transition: 0.4s;
 
           &:hover {
             background-color: #383b42;
+            color: white;
           }
 
           & svg {
             height: 18px;
             width: 18px;
           }
+        }
+        .save-button {
+          background-color: #ffbb98;
+          box-shadow: none;
+        }
+        .cancel-button {
+          background-color: #fff;
+          box-shadow: none;
         }
       }
 
@@ -421,6 +454,11 @@
         flex: 1;
       }
     }
+  }
+
+  & .link:hover {
+    scale: 1.03;
+    cursor: pointer;
   }
 
   .task-header {
@@ -470,60 +508,45 @@
     background-color: #f0f0f0;
   }
 
-  .empty-list {
-    color: #383b42;
+  .empty-state {
+    text-align: left;
+    padding: 10px 0;
+  }
+
+  .suggested-tags {
+    margin-top: 1rem;
+  }
+
+  .empty-text {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #555;
+    font-weight: 800;
+  }
+
+  .tags {
+    display: flex;
+    justify-content: start;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    padding: 0.4rem 0.8rem;
     font-size: 0.9rem;
-    margin: 20px 0;
-    background-color: #f6f8f9;
+    color: #191919;
+    background-color: #ffff;
+    /* border: 1px solid #007bff; */
     border-radius: 8px;
-    padding: 20px;
+    cursor: pointer;
+    box-shadow: 0px 0px 20px #f9dcd0;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
-  .empty-list--centered {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .empty-list p {
-    margin: 10px 0;
-    line-height: 1.6;
-    font-size: 1rem;
-  }
-
-  input,
-  textarea {
-    border-radius: 8px;
-    font-family: 'Anderson Grotesk', Arial, Helvetica, sans-serif;
-    border: none;
-    padding: 8px 20px;
-    background-color: #f6f8f9;
-
-    &:focus {
-      outline: 1px solid rgb(212, 212, 212);
-    }
-  }
-  .itemEditmode {
-    display: flex;
-    text-decoration: none;
-    opacity: 1;
-
-    & textarea {
-      resize: none;
-      max-width: 600px;
-    }
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+  .tag:hover {
+    background-color: #191919;
+    color: #fff;
   }
 </style>
