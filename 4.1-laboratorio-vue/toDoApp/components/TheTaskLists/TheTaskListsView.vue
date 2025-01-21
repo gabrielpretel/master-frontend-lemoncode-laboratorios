@@ -3,8 +3,6 @@
   import { useRouter } from 'vue-router'
   import { toast } from 'vue-sonner'
 
-  import AddIcon from '../assets/icons/addIcon.svg'
-  import PlusIcon from '../assets/icons/plusIcon.svg'
   import DeleteIcon from '../assets/icons/deleteIcon.svg'
   import CompleteIcon from '../assets/icons/completeIcon.svg'
   import EditIcon from '../assets/icons/editIcon.svg'
@@ -13,21 +11,13 @@
   import draggable from 'vuedraggable'
 
   import { useTransitions } from '../../composables/useTransitions'
-  import { useRandomColors } from '../../composables/useRandomColors'
   import { TaskList, useTasksLists } from '../../composables/useTasksLists'
 
-  const showNewListForm = ref<boolean>(false)
-  const name = ref<string>('')
+  import TheSuggestedTagsComponent from './TheSuggestedTagsComponent.vue'
+  import TheNewListForm from './TheNewListFormComponent.vue'
+  import TheEmptyListMessageComponent from './TheEmptyListMessageComponent.vue'
+
   let editName = ref<string>('')
-  const suggestions = ref([
-    'Shopping List',
-    'Books to Read',
-    'Gift Ideas',
-    'Movies to Watch',
-    'Places to Visit',
-    'Healthy Recipes',
-    'Meditation Plan',
-  ])
 
   const router = useRouter()
   const lists = useTasksLists()
@@ -44,27 +34,9 @@
   })
 
   const { beforeEnter, enter, leave } = useTransitions()
-  const randomColor = useRandomColors()
-
-  const toggleNewListForm = () => {
-    showNewListForm.value = !showNewListForm.value
-  }
 
   const navigateToList = (listId: string) => {
     router.push(`/list/${listId}`)
-  }
-
-  const createNewList = () => {
-    const newList: TaskList = {
-      id: lists.generateId(),
-      name: name.value,
-      bgColor: randomColor.getRandomColor(),
-      editMode: false,
-      tasks: [],
-    }
-
-    lists.addList(newList)
-    name.value = ''
   }
 
   const startListEditing = (list: TaskList) => {
@@ -101,11 +73,6 @@
   const reorderLists = (newOrder: TaskList[]) => {
     taskListArray.value = [...newOrder]
   }
-
-  const createSuggestedList = (suggestion: string) => {
-    name.value = suggestion
-    createNewList()
-  }
 </script>
 
 <template>
@@ -118,68 +85,11 @@
   />
   <h1>My lists</h1>
 
-  <button
-    aria-label="Create a new list"
-    :class="!showNewListForm ? 'new-list' : 'new-list-open'"
-    @click="toggleNewListForm()"
-  >
-    <AddIcon class="new-list-icon" /> New list
-  </button>
+  <TheNewListForm />
 
-  <div v-auto-animate>
-    <form
-      @submit.prevent="createNewList"
-      class="new-list-form"
-      v-if="showNewListForm"
-      aria-labelledby="new-list-form-title"
-    >
-      <h2 id="new-list-form-title" class="sr-only">New List Form</h2>
+  <TheEmptyListMessageComponent :taskListArray="taskListArray" />
 
-      <label for="list-name" class="sr-only">List Name</label>
-      <input
-        id="list-name"
-        type="text"
-        v-model="name"
-        placeholder="List name"
-        required
-        aria-label="Enter the name of the list"
-      />
-
-      <button aria-label="Add this list" class="add-list-button">
-        <PlusIcon /><span>Add list</span>
-      </button>
-    </form>
-  </div>
-
-  <div
-    class="empty-list empty-list--centered"
-    v-if="taskListArray.length === 0"
-    role="alert"
-    aria-live="polite"
-  >
-    <p>
-      <i>No lists available at the moment</i>. Use the <b>button above</b> to
-      create a <i>new list</i> and start organizing your tasks effectively.
-    </p>
-  </div>
-
-  <div class="empty-state" v-if="taskListArray.length === 0">
-    <div class="suggested-tags">
-      <p class="empty-text">No lists yet? Try starting with:</p>
-      <div class="tags" role="list">
-        <button
-          v-for="suggestion in suggestions"
-          :key="suggestion"
-          class="tag"
-          @click="createSuggestedList(suggestion)"
-          role="listitem"
-          aria-label="Create list: {{ suggestion }}"
-        >
-          {{ suggestion }}
-        </button>
-      </div>
-    </div>
-  </div>
+  <TheSuggestedTagsComponent :taskListArray="taskListArray" />
 
   <section>
     <div class="task-list" role="list" aria-label="Task lists">
@@ -301,76 +211,6 @@
 </template>
 
 <style scoped>
-  .new-list {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0;
-    transition: 0.4s;
-
-    &:hover {
-      font-weight: 600;
-    }
-
-    &:hover .new-list-icon {
-      fill: #383b42;
-      border-color: #383b42;
-      color: white;
-    }
-  }
-
-  .new-list-open {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0;
-    fill: #383b42;
-    border-color: #383b42;
-    font-weight: 600;
-
-    & .new-list-icon {
-      fill: #383b42;
-      border-color: #383b42;
-      color: white;
-    }
-  }
-
-  .new-list-icon {
-    fill: transparent;
-    margin-right: 5px;
-    transition: 0.4s;
-  }
-
-  .new-list-form {
-    display: flex;
-    flex-direction: column;
-    max-width: 600px;
-    gap: 10px;
-
-    .add-list-button {
-      display: flex;
-      width: 110px;
-      border-radius: 8px;
-      padding: 8px;
-      background-color: #fff;
-      transition: 0.4s;
-      font-size: 14px;
-      text-align: center;
-      box-shadow: 0px 0px 20px #f9dcd0;
-      border: 1px solid #d9c8c05e;
-
-      & svg {
-        height: 16px;
-      }
-
-      &:hover {
-        background-color: #383b42;
-        border-color: #383b42;
-        color: white;
-      }
-    }
-  }
-
   .task-list {
     margin-top: 20px;
 
@@ -510,47 +350,5 @@
     opacity: 0;
     scale: 1.05;
     background-color: #f0f0f0;
-  }
-
-  .empty-state {
-    text-align: left;
-    padding: 10px 0;
-  }
-
-  .suggested-tags {
-    margin-top: 1rem;
-  }
-
-  .empty-text {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    color: #555;
-    font-weight: 800;
-  }
-
-  .tags {
-    display: flex;
-    justify-content: start;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
-    color: #191919;
-    background-color: #ffff;
-    border: 1px solid #d9c8c05e;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0px 0px 20px #f9dcd0;
-    transition:
-      background-color 0.3s ease,
-      color 0.3s ease;
-  }
-
-  .tag:hover {
-    background-color: #383b42;
-    color: #fff;
   }
 </style>
