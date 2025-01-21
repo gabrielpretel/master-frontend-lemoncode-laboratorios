@@ -3,7 +3,12 @@
     <TheNavigation />
     <div class="content-container"><slot /></div>
     <footer>
-      <p>Designed and brought to life by <em>Gabriel Pretel</em>.</p>
+      <p>
+        Designed and brought to life by
+        <a href="https://github.com/gabrielpretel/" target="_blank">
+          <span>Gabriel Pretel</span> </a
+        >.
+      </p>
     </footer>
   </main>
 </template>
@@ -33,6 +38,22 @@
     list-style-type: none;
   }
 
+  a {
+    text-decoration: none;
+    transition: all 0.4s ease;
+    color: #191919;
+
+    &:hover {
+      font-size: 1.1em;
+      animation: meAnimation 2s infinite;
+    }
+
+    & span {
+      font-weight: 900;
+      font-style: italic;
+    }
+  }
+
   .app-container {
     display: grid;
     grid-template-columns: 1fr;
@@ -43,8 +64,6 @@
     position: relative;
     z-index: 0;
     overflow: hidden;
-    /* background: linear-gradient(0deg, #ffedde 0%, transparent 25%),
-      linear-gradient(to bottom, #ffedde 0%, transparent 25%); */
   }
 
   .app-container::before {
@@ -80,6 +99,24 @@
 
     p {
       font-weight: 600;
+    }
+  }
+
+  @keyframes meAnimation {
+    0% {
+      color: #09122c;
+    }
+    25% {
+      color: #872341;
+    }
+    50% {
+      color: #be3144;
+    }
+    75% {
+      color: #e17564;
+    }
+    100% {
+      color: #09122c;
     }
   }
 </style>

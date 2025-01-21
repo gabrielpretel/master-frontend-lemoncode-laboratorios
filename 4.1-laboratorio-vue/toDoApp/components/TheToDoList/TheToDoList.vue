@@ -502,6 +502,19 @@
 
     &:hover {
       text-shadow: 0px 0px 20px #ffbb98;
+      animation: backAnimation 1s infinite ease-in-out;
+    }
+  }
+
+  @keyframes backAnimation {
+    0% {
+      transform: translateX(0px);
+    }
+    50% {
+      transform: translateX(-10px);
+    }
+    100% {
+      transform: translateX(0px);
     }
   }
 </style>
