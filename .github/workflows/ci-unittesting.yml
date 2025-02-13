@@ -1,10 +1,13 @@
 name: CI Unit Testing Workflow
 
-on: pull_request
+on:
+  pull_request:
+    paths:
+      - '5-laboratorio-testing/**'
 
 jobs:
   ci:
-    runs on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
