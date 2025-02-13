@@ -11,9 +11,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Install
+        working-directory: 5-laboratorio-testing
         run: |
           npm ci
           npm install @rollup/rollup-linux-x64-gnu --save-optional
+
       - name: Unit tests
+        working-directory: 5-laboratorio-testing
         run: npm test
