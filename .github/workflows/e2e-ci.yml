@@ -1,6 +1,9 @@
 name: CI Workflow
 
-on: pull_request
+on:
+  pull_request:
+    paths:
+      - '5-laboratorio-testing/**'
 
 jobs:
   ci:
