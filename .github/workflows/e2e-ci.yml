@@ -8,23 +8,28 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 5-laboratorio-testing
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Install
-        run: cd 5-laboratorio-testing && npm ci
+        run: npm ci
+
       - name: Tests e2e
         run: npm run test:e2e:ci
 
       - name: Upload screenshots when specs fail
-        if: ${{ failure()}}
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: screenshots
           path: ./cypress/screenshots
 
       - name: Upload videos when specs fail
-        if: ${{ failure()}}
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: videos
