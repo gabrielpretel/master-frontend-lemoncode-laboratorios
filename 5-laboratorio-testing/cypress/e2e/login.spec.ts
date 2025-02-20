@@ -23,11 +23,13 @@ describe('Login specs', () => {
     // Act
     cy.findByRole('textbox').as('userInput');
     cy.findByLabelText('Contraseña *').as('passwordInput');
+
     cy.get('@userInput').type(user);
     cy.get('@passwordInput').type(password);
     cy.findByRole('button', {
       name: 'Login',
     }).click();
+
     cy.findByRole('presentation').as('snackbarAlert');
 
     // Assert
@@ -46,8 +48,11 @@ describe('Login specs', () => {
     // Act
     cy.findByRole('textbox').as('userInput');
     cy.findByLabelText('Contraseña *').as('passwordInput');
+
     cy.get('@userInput').type(user);
     cy.get('@passwordInput').type(password);
+    cy.get('@userInput').should('have.value', user);
+    cy.get('@passwordInput').should('have.value', password);
     cy.findByRole('button', {
       name: 'Login',
     }).click();
