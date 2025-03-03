@@ -14,11 +14,11 @@ export const HotelCollectionContainer = () => {
   }, []);
 
   const handleCreateHotel = () => {
-    navigate(linkRoutes.createHotel);
+    navigate(linkRoutes.createCharacter);
   };
 
   const handleEdit = (id: string) => {
-    navigate(linkRoutes.editHotel(id));
+    navigate(linkRoutes.editCharacter(id));
   };
 
   const handleDelete = async (id: string) => {
