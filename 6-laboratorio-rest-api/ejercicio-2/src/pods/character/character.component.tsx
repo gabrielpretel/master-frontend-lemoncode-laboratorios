@@ -1,11 +1,7 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
 import Button from '@mui/material/Button';
-import {
-  TextFieldComponent,
-  SelectComponent,
-  RatingComponent,
-} from '#common/components';
+import { TextFieldComponent } from '#common/components';
 import { formValidation } from './character.validations';
 import * as classes from './character.styles';
 import { Character } from './character.vm';
@@ -30,6 +26,7 @@ export const CharacterComponent: React.FunctionComponent<Props> = (props) => {
           <TextFieldComponent name="name" label="Name" />
           <TextFieldComponent name="location.name" label="Location" />
           <TextFieldComponent name="origin.name" label="Origin" />
+          <TextFieldComponent name="bestSentence" label="Best sentence" />
           <Button type="submit" variant="contained" color="primary">
             Save
           </Button>

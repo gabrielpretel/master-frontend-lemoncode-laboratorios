@@ -11,6 +11,7 @@ export const mapCharacterFromApiToVm = (
     name: character.origin.name,
     url: character.origin.url,
   },
+  bestSentence: character.bestSentence || '',
 });
 
 export const mapCharacterFromVmToApi = (
@@ -24,4 +25,5 @@ export const mapCharacterFromVmToApi = (
       name: character.origin.name,
       url: character.origin.url,
     },
+    bestSentence: character.bestSentence || '',
   } as unknown as apiModel.Character);

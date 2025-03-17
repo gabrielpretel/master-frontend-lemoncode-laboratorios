@@ -26,13 +26,13 @@ export const CharacterContainer: React.FunctionComponent = (props) => {
     }
   }, []);
 
-  const handleSave = async (hotel: Character) => {
-    const apiHotel = mapCharacterFromVmToApi(hotel);
-    const success = await api.saveHotel(apiHotel);
+  const handleSave = async (character: Character) => {
+    const apiCharacter = mapCharacterFromVmToApi(character);
+    const success = await api.saveCharacter(apiCharacter);
     if (success) {
       navigate(-1);
     } else {
-      alert('Error on save hotel');
+      alert('Error on save character');
     }
   };
 

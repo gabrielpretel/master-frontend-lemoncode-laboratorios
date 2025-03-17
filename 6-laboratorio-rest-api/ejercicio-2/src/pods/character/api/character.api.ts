@@ -14,6 +14,12 @@ export const getCharacter = async (id: string): Promise<Character> => {
   }
 };
 
-export const saveHotel = async (hotel: Character): Promise<boolean> => {
-  return true;
+export const saveCharacter = async (character: Character): Promise<Boolean> => {
+  try {
+    await axios.put(`${baseURL}/api/character/${character.id}`, character);
+    return true;
+  } catch (error) {
+    console.error('Error saving character:', error);
+    throw new Error('Failed to save character');
+  }
 };
