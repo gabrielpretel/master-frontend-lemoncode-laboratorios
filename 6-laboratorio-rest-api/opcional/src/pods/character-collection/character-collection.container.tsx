@@ -14,6 +14,7 @@ export const CharacterCollectionContainer = () => {
     loadCharacterCollection();
   }, []);
 
+
   const handleCreateCharacter = () => {
     navigate(linkRoutes.createCharacter);
   };

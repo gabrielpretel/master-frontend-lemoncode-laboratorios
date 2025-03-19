@@ -1,23 +1,36 @@
-import axios from 'axios';
 import { CharacterEntityApi } from './character-collection.api-model';
+import { graphql } from '#core/api/graphql.client';
 
-const baseURL = import.meta.env.VITE_API_BASE;
+interface GetCharacterCollectionResponse {
+  characters: {
+    results: CharacterEntityApi[];
+  };
+}
 
 export const getCharacterCollection = async (): Promise<
   CharacterEntityApi[]
 > => {
-  try {
-    const { data } = await axios.get<{ results: CharacterEntityApi[] }>(
-      `${baseURL}/api/character`
-    );
-    return data.results;
-  } catch (error) {
-    console.error('Error fetching character collection:', error);
-    throw new Error('Failed to fetch character collection');
+  const query = `
+    query {
+  characters {
+    results{
+    id
+    image  
+    name
+      origin{
+        name
+      }
+    }
   }
+}`;
+
+  const { characters } = await graphql<GetCharacterCollectionResponse>({
+    query,
+  });
+
+  return characters.results;
 };
 
 export const deleteCharacter = async (id: string): Promise<boolean> => {
-  // hotelCollection = hotelCollection.filter((h) => h.id !== id);
   return true;
 };
