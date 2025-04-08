@@ -1,7 +1,6 @@
 import React, { PropsWithChildren } from "react";
 import { css } from "@emotion/react";
-import { HeaderComponent } from "./components/header-component";
-import { CartSidebarComponent, FooterComponent } from "./components";
+import { CartSidebarComponent, FooterComponent, HeaderComponent } from "./components";
 
 const AppLayoutContentStyle = css`
   display: flex;
